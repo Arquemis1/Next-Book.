@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta | NextStory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:       #0e0e10;
+            --surface:  #16161a;
+            --surface2: #1f1f25;
+            --border:   #2a2a32;
+            --accent:   #c8f06e;
+            --accent2:  #a8d84e;
+            --text:     #e8e8f0;
+            --muted:    #6b6b80;
+            --success:  #51cf66;
+            --error:    #ff6b6b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 5%;
+            position: relative;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(200,240,110,.07) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .register-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 460px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            margin-bottom: 2rem;
+        }
+
+        .logo-mark {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+        }
+
+        .logo-mark svg { width: 20px; height: 20px; }
+
+        .logo-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--text);
+            letter-spacing: -.02em;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .card-header h1 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(200,240,110, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: var(--muted);
+        }
+
+        .helptext {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 0.3rem;
+            display: block;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.85rem;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            margin-top: 0.8rem;
+        }
+
+        .btn-solid {
+            background: var(--accent);
+            color: #0e0e10;
+        }
+
+        .btn-solid:hover {
+            background: var(--accent2);
+            transform: translateY(-2px);
+        }
+
+        .links {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .links a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .links a:hover {
+            color: var(--accent2);
+            text-decoration: underline;
+        }
+
+        .errorlist {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            list-style: none;
+            font-size: 0.85rem;
+        }
+
+        .success-msg {
+            background: rgba(81, 207, 102, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="register-container">
+    <!-- Logo -->
+    <a href="{% url 'blog:welcome' %}" class="logo">
+        <div class="logo-mark">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="5" height="12" rx="1.5" fill="#0e0e10"/>
+                <rect x="9" y="2" width="5" height="8" rx="1.5" fill="#0e0e10"/>
+            </svg>
+        </div>
+        <span class="logo-name">NextStory</span>
+    </a>
+
+    <!-- Tarjeta de Registro -->
+    <div class="card">
+        <div class="card-header">
+            <h1>Crear tu cuenta</h1>
+            <p>Únete a nuestra comunidad y empieza a escribir o leer hoy mismo</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <ul class="errorlist">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="id_username">Nombre de usuario</label>
+                {{ form.username }}
+                <span class="helptext">Máximo 150 caracteres. Solo letras, números y @/./+/-/_</span>
+            </div>
+
+            <div class="form-group">
+                <label for="id_email">Correo electrónico</label>
+                {{ form.email }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password1">Contraseña</label>
+                {{ form.password1 }}
+                <span class="helptext">Al menos 8 caracteres. No puede ser tan común ni totalmente numérica.</span>
+            </div>
+
+            <div class="form-group">
+                <label for="id_password2">Repetir contraseña</label>
+                {{ form.password2 }}
+                <span class="helptext">Escribe la misma contraseña de antes, para verificar.</span>
+            </div>
+
+            <button type="submit" class="btn btn-solid">Registrarme</button>
+        </form>
+
+        <div class="links">
+            <p>¿Ya tienes cuenta? <a href="{% url 'users:login' %}">Iniciar sesión</a></p>
+            <p style="margin-top: 1rem; font-size: 0.85rem; opacity: 0.7;">
+                <a href="{% url 'blog:welcome' %}">← Volver al inicio</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Blog con Dola</title> 
+</head>
+<body>
+    <h1>Publicaciones Recientes</h1> 
+
+    {% for post in posts %} 
+        <div>
+            <h2>{{ post.title }}</h2> 
+            <p>Publicado el: {{ post.published_date }}</p>
+            <p>{{ post.content|linebreaksbr }}</p> 
+        <hr> 
+    {% empty %} 
+        <p>No hay publicaciones en el blog todavía. ¡Crea algunas desde el panel de administración!</p>
+    {% endfor %} 
+</body>
+</html>

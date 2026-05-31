@@ -1,0 +1,959 @@
+{# blog/templates/blog/home_page.html #}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NextStory</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg:       #0e0e10;
+  --surface:  #16161a;
+  --surface2: #1f1f25;
+  --border:   #2a2a32;
+  --accent:   #c8f06e;
+  --accent2:  #a8d84e;
+  --text:     #e8e8f0;
+  --muted:    #6b6b80;
+  --muted2:   #3a3a48;
+}
+
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ── NAVBAR ─────────────────────────────── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5%;
+  height: 68px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(14,14,16,.82);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+}
+
+.logo-mark svg { width: 16px; height: 16px; }
+
+.logo-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--text);
+  letter-spacing: -.02em;
+}
+
+.nav-center {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 40px;
+}
+
+.search-wrap {
+  position: relative;
+}
+
+.search-wrap svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  stroke: var(--muted);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.search {
+  width: 100%;
+  height: 40px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding-left: 40px;
+  padding-right: 16px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  outline: none;
+  transition: border-color .2s;
+}
+
+.search::placeholder { color: var(--muted); }
+.search:focus { border-color: var(--accent); }
+
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+
+.btn-ghost {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-ghost:hover { border-color: var(--muted); color: #fff; }
+
+.btn-solid {
+  background: var(--accent);
+  border: none;
+  color: #0e0e10;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-solid:hover { background: var(--accent2); }
+
+/* ── HERO ────────────────────────────── */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  min-height: calc(100vh - 68px);
+  padding: 0 5%;
+  align-items: center;
+  position: relative;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 55% at 70% 50%, rgba(200,240,110,.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-left { max-width: 560px; }
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-size: .78rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 28px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.hero-tag span {
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.6rem, 5vw, 4.2rem);
+  line-height: 1.06;
+  letter-spacing: -.03em;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.hero h1 em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  color: var(--muted);
+  font-weight: 300;
+  max-width: 420px;
+  margin-bottom: 36px;
+  line-height: 1.7;
+}
+
+.hero-ctas { display: flex; gap: 12px; align-items: center; }
+
+.btn-cta {
+  background: var(--accent);
+  color: #0e0e10;
+  border: none;
+  padding: 13px 28px;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: .95rem;
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+  text-decoration: none;
+}
+
+.btn-cta:hover { background: var(--accent2); transform: translateY(-1px); }
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color .2s;
+  text-decoration: none;
+}
+
+.btn-link:hover { color: var(--text); }
+
+.hero-stats {
+  display: flex;
+  gap: 36px;
+  margin-top: 52px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.stat-label {
+  font-size: .8rem;
+  color: var(--muted);
+  margin-top: 2px;
+  letter-spacing: .03em;
+}
+
+/* HERO RIGHT — book stack */
+.hero-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 480px;
+}
+
+.book-stack {
+  position: relative;
+  width: 240px;
+  height: 340px;
+}
+
+.book-stack .bk {
+  position: absolute;
+  width: 200px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,.6);
+}
+
+.bk-1 { top: 0; left: 0; transform: rotate(-8deg); z-index: 1; }
+.bk-2 { top: 30px; left: 28px; transform: rotate(2deg); z-index: 2; }
+.bk-3 { top: 10px; left: 55px; transform: rotate(10deg); z-index: 3; }
+
+.bk svg { display: block; width: 100%; }
+
+/* ── SECTION LAYOUT ──────────────────────── */
+.section {
+  padding: 80px 5%;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 36px;
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+
+.section-link {
+  font-size: .85rem;
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color .2s;
+}
+.section-link:hover { color: var(--accent); }
+
+/* ── CAROUSEL ────────────────────────────── */
+.carousel-outer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.carousel-track-wrap { overflow: hidden; flex: 1; }
+
+.carousel-track {
+  display: flex;
+  gap: 16px;
+  transition: transform .42s cubic-bezier(.4,0,.2,1);
+}
+
+/* BOOK CARD */
+.bcard {
+  min-width: 172px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform .22s ease;
+}
+
+.bcard:hover { transform: translateY(-4px); }
+
+.bcard-cover {
+  width: 100%;
+  aspect-ratio: 2/3;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  background: var(--surface2);
+}
+
+.bcard-cover svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.bcard-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.65) 0%, transparent 50%);
+  border-radius: 10px;
+}
+
+.bcard-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(14,14,16,.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.bcard-info { padding: 12px 2px 0; }
+
+.bcard-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .95rem;
+  color: var(--text);
+  line-height: 1.25;
+  margin-bottom: 3px;
+}
+
+.bcard-author {
+  font-size: .78rem;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+.bcard-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.bcard-rating {
+  font-size: .75rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.bcard-reads {
+  font-size: .72rem;
+  color: var(--muted);
+}
+
+/* CAROUSEL ARROWS */
+.c-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: border-color .2s, background .2s;
+}
+
+.c-arrow:hover { border-color: var(--accent); background: var(--surface2); }
+
+/* DOTS */
+.c-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 24px;
+}
+
+.c-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--muted2);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background .2s, width .25s;
+}
+
+.c-dot.active {
+  background: var(--accent);
+  width: 18px;
+  border-radius: 3px;
+}
+
+/* ── DIVIDER ─────────────────────────────── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 5%;
+}
+
+/* ── GENRES ──────────────────────────────── */
+.genres-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.genre-pill {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  padding: 9px 20px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color .2s, color .2s, background .2s;
+}
+
+.genre-pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(200,240,110,.06);
+}
+
+.genre-pill.active {
+  border-color: var(--accent);
+  color: #0e0e10;
+  background: var(--accent);
+}
+
+/* ── FOOTER ──────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-copy {
+  font-size: .82rem;
+  color: var(--muted);
+}
+
+.footer-links {
+  display: flex;
+  gap: 22px;
+}
+
+.footer-links a {
+  font-size: .82rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .2s;
+}
+
+.footer-links a:hover { color: var(--text); }
+
+/* ── USER MENU ─────────────────────────── */
+.user-menu {
+  position: relative;
+}
+
+.user-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .88rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-width: 160px;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 300;
+}
+
+.user-menu:hover .user-dropdown {
+  display: flex;
+}
+
+.user-dropdown a {
+  color: var(--text);
+  padding: 10px 14px;
+  text-decoration: none;
+  font-size: .85rem;
+  transition: background .2s;
+}
+
+.user-dropdown a:hover {
+  background: var(--surface);
+}
+
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ──────────────────────────── -->
+<header>
+<a class="logo" href="{% url 'blog:home' %}"> 
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="5" height="12" rx="1.5" fill="#0e0e10"/>
+        <rect x="9" y="2" width="5" height="8" rx="1.5" fill="#0e0e10"/>
+      </svg>
+    </div>
+    <span class="logo-name">NextStory</span>
+  </a>
+
+  <div class="nav-center">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input class="search" type="text" placeholder="Buscar historias, autores...">
+    </div>
+  </div>
+
+  <div class="nav-actions">
+    {% if user.is_authenticated %}
+    <div class="user-menu">
+      <button class="user-btn">👤 {{ user.username }} ▾</button>
+      <div class="user-dropdown">
+        <a href="#">Mi Perfil</a>
+        <a href="#">Mensajes</a>
+        <a href="#">Mis Historias</a>
+        <a href="{% url 'users:logout' %}">Cerrar sesión</a>
+      </div>
+    </div>
+    {% else %}
+    <a class="btn-ghost" href="{% url 'users:login' %}">Iniciar sesión</a>
+    <a class="btn-solid" href="{% url 'users:register' %}">Registrarse</a>
+    {% endif %}
+  </div>
+</header>
+
+<!-- ── HERO ────────────────────────────── -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag"><span></span> Más de 50.000 historias</div>
+    <h1>Lee lo que<br>otros no<br><em>se atreven</em><br>a escribir.</h1>
+    <p class="hero-sub">Descubre historias de fantasía, romance y misterio escritas por una comunidad global de autores independientes.</p>
+    <div class="hero-ctas">
+      <a href="#populares" class="btn-cta">Explorar ahora</a>
+      <a href="#" class="btn-link">¿Cómo funciona? →</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">50K+</div>
+        <div class="stat-label">Historias</div>
+      </div>
+      <div>
+        <div class="stat-num">120K</div>
+        <div class="stat-label">Lectores</div>
+      </div>
+      <div>
+        <div class="stat-num">4.8★</div>
+        <div class="stat-label">Valoración media</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="book-stack">
+      <!-- Book 1 -->
+      <div class="bk bk-1">
+        <svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="200" height="300" fill="#1a1a2e"/>
+          <rect x="0" y="0" width="8" height="300" fill="#c8f06e"/>
+          <circle cx="100" cy="120" r="55" fill="#0f3460" opacity=".9"/>
+          <circle cx="100" cy="120" r="35" fill="#16213e"/>
+          <circle cx="100" cy="120" r="18" fill="#c8f06e" opacity=".8"/>
+          <circle cx="18" cy="60" r="3" fill="#c8f06e" opacity=".5"/>
+          <circle cx="175" cy="45" r="2" fill="#c8f06e" opacity=".4"/>
+          <circle cx="160" cy="200" r="3" fill="#c8f06e" opacity=".3"/>
+          <rect x="30" y="220" width="140" height="10" rx="5" fill="#c8f06e" opacity=".7"/>
+          <rect x="50" y="240" width="100" height="6" rx="3" fill="#6b6b80" opacity=".6"/>
+          <rect x="60" y="256" width="80" height="5" rx="2.5" fill="#6b6b80" opacity=".4"/>
+        </svg>
+      </div>
+      <!-- Book 2 -->
+      <div class="bk bk-2">
+        <svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="200" height="300" fill="#2d1b4e"/>
+          <rect x="0" y="0" width="8" height="300" fill="#a78bf7"/>
+          <path d="M40 280 L100 60 L160 280 Z" fill="#1a0d33" opacity=".8"/>
+          <path d="M55 280 L100 100 L145 280 Z" fill="#a78bf7" opacity=".3"/>
+          <circle cx="100" cy="75" r="20" fill="#a78bf7" opacity=".9"/>
+          <circle cx="40" cy="40" r="4" fill="#ffd7ec" opacity=".6"/>
+          <circle cx="165" cy="55" r="3" fill="#ffd7ec" opacity=".5"/>
+          <rect x="30" y="220" width="140" height="10" rx="5" fill="#e8e8f0" opacity=".8"/>
+          <rect x="50" y="240" width="100" height="6" rx="3" fill="#6b6b80" opacity=".5"/>
+        </svg>
+      </div>
+      <!-- Book 3 -->
+      <div class="bk bk-3">
+        <svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="200" height="300" fill="#0d1f12"/>
+          <rect x="0" y="0" width="8" height="300" fill="#3aab75"/>
+          <path d="M0 200 Q60 150 100 180 Q140 210 200 160 L200 300 L0 300Z" fill="#1a3d24" opacity=".9"/>
+          <path d="M0 230 Q70 185 120 210 Q160 230 200 195 L200 300 L0 300Z" fill="#3aab75" opacity=".4"/>
+          <circle cx="100" cy="90" r="38" fill="#1a3d24"/>
+          <circle cx="100" cy="90" r="24" fill="#3aab75" opacity=".7"/>
+          <circle cx="100" cy="90" r="12" fill="#c8f06e" opacity=".6"/>
+          <rect x="30" y="220" width="140" height="10" rx="5" fill="#e8e8f0" opacity=".9"/>
+          <rect x="50" y="240" width="100" height="6" rx="3" fill="#6b6b80" opacity=".5"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── POPULAR ─────────────────────────── -->
+<section class="section" id="populares">
+  <div class="section-header">
+    <h2 class="section-title">Populares ahora</h2>
+    <a class="section-link" href="#">Ver todo →</a>
+  </div>
+
+  <div class="carousel-outer">
+    <button class="c-arrow" id="prev">‹</button>
+    <div class="carousel-track-wrap">
+      <div class="carousel-track" id="track"></div>
+    </div>
+    <button class="c-arrow" id="next">›</button>
+  </div>
+
+  <div class="c-dots" id="dots"></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── GENRES ─────────────────────────── -->
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">Géneros</h2>
+  </div>
+  <div class="genres-grid">
+    <button class="genre-pill active">Todo</button>
+    <button class="genre-pill">Romance</button>
+    <button class="genre-pill">Fantasía</button>
+    <button class="genre-pill">Drama</button>
+    <button class="genre-pill">Misterio</button>
+    <button class="genre-pill">Aventura</button>
+    <button class="genre-pill">Ciencia ficción</button>
+    <button class="genre-pill">Terror</button>
+    <button class="genre-pill">Thriller</button>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────── -->
+<footer>
+  <span class="footer-copy">© 2026 NextStory</span>
+  <div class="footer-links">
+    <a href="#">Acerca de</a>
+    <a href="#">Privacidad</a>
+    <a href="#">Términos</a>
+    <a href="#">Contacto</a>
+  </div>
+</footer>
+
+<script>
+const books = [
+  {
+    title: "Eclipse",
+    author: "Camila Torres",
+    genre: "Fantasía",
+    rating: "4.9",
+    reads: "128K lecturas",
+    badgeColor: "#7cc3ff",
+    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
+      <rect width="172" height="258" fill="#0d1520"/>
+      <circle cx="86" cy="100" r="65" fill="#0f3460" opacity=".5"/>
+      <circle cx="86" cy="100" r="46" fill="#0f3460" opacity=".7"/>
+      <circle cx="86" cy="100" r="28" fill="#c8f06e" opacity=".15"/>
+      <circle cx="86" cy="100" r="14" fill="#c8f06e" opacity=".8"/>
+      <circle cx="96" cy="92" r="20" fill="#0d1520" opacity=".9"/>
+      <circle cx="20" cy="38" r="2.5" fill="#c8f06e" opacity=".5"/>
+      <circle cx="148" cy="28" r="2" fill="#c8f06e" opacity=".4"/>
+      <circle cx="155" cy="170" r="2" fill="#7cc3ff" opacity=".4"/>
+      <circle cx="16" cy="190" r="2.5" fill="#7cc3ff" opacity=".3"/>
+      <rect x="16" y="210" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
+      <rect x="30" y="228" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".55"/>
+      <rect x="40" y="242" width="80" height="5" rx="2.5" fill="#6b6b80" opacity=".35"/>
+    </svg>`
+  },
+  {
+    title: "Soft Rain",
+    author: "Lucía Mora",
+    genre: "Romance",
+    rating: "4.8",
+    reads: "95K lecturas",
+    badgeColor: "#ff8aa0",
+    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
+      <rect width="172" height="258" fill="#1e0d14"/>
+      <path d="M0 140 Q43 110 86 135 Q129 160 172 128 L172 258 L0 258Z" fill="#3d1225" opacity=".9"/>
+      <path d="M0 175 Q50 148 100 168 Q140 185 172 160 L172 258 L0 258Z" fill="#ff8aa0" opacity=".2"/>
+      <circle cx="86" cy="85" r="50" fill="#3d1225"/>
+      <circle cx="86" cy="85" r="34" fill="#5c1c30"/>
+      <circle cx="86" cy="85" r="18" fill="#ff8aa0" opacity=".7"/>
+      <path d="M60 85 Q86 65 112 85" stroke="#ff8aa0" stroke-width="2" fill="none" opacity=".5"/>
+      <circle cx="24" cy="32" r="3" fill="#ff8aa0" opacity=".4"/>
+      <circle cx="150" cy="42" r="2.5" fill="#ff8aa0" opacity=".3"/>
+      <circle cx="155" cy="145" r="2" fill="#ffd7ec" opacity=".4"/>
+      <rect x="16" y="208" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
+      <rect x="30" y="226" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".5"/>
+    </svg>`
+  },
+  {
+    title: "Moon Letters",
+    author: "Andrés Vidal",
+    genre: "Misterio",
+    rating: "4.7",
+    reads: "74K lecturas",
+    badgeColor: "#a78bf7",
+    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
+      <rect width="172" height="258" fill="#0a0a1a"/>
+      <circle cx="120" cy="70" r="48" fill="#1e1a3e" opacity=".8"/>
+      <circle cx="120" cy="70" r="34" fill="#2d2860" opacity=".9"/>
+      <circle cx="133" cy="62" r="26" fill="#0a0a1a" opacity=".95"/>
+      <circle cx="12" cy="25" r="2" fill="white" opacity=".8"/>
+      <circle cx="55" cy="18" r="1.5" fill="white" opacity=".6"/>
+      <circle cx="160" cy="130" r="2" fill="white" opacity=".7"/>
+      <circle cx="8" cy="100" r="1.5" fill="white" opacity=".5"/>
+      <circle cx="145" cy="20" r="1.5" fill="white" opacity=".6"/>
+      <circle cx="40" cy="170" r="2" fill="#a78bf7" opacity=".4"/>
+      <path d="M20 200 L86 145 L152 200Z" fill="#a78bf7" opacity=".08"/>
+      <rect x="16" y="208" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
+      <rect x="30" y="226" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".5"/>
+      <rect x="38" y="240" width="80" height="5" rx="2.5" fill="#6b6b80" opacity=".35"/>
+    </svg>`
+  },
+  {
+    title: "Wild Shores",
+    author: "Valeria Ruiz",
+    genre: "Aventura",
+    rating: "4.9",
+    reads: "110K lecturas",
+    badgeColor: "#3aab75",
+    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
+      <rect width="172" height="258" fill="#071510"/>
+      <rect x="0" y="160" width="172" height="98" fill="#0f2b1a"/>
+      <path d="M0 160 Q43 145 86 162 Q129 178 172 155 L172 258 L0 258Z" fill="#1a4a28" opacity=".9"/>
+      <path d="M0 190 Q55 172 100 188 Q145 205 172 182 L172 258 L0 258Z" fill="#3aab75" opacity=".3"/>
+      <path d="M72 160 L86 40 L100 160Z" fill="#2d6e40" opacity=".85"/>
+      <path d="M58 160 L86 75 L114 160Z" fill="#3aab75" opacity=".5"/>
+      <circle cx="38" cy="50" r="24" fill="#1a3a10"/>
+      <circle cx="38" cy="50" r="16" fill="#2d6e20" opacity=".8"/>
+      <circle cx="38" cy="50" r="8" fill="#c8f06e" opacity=".6"/>
+      <circle cx="148" cy="38" r="3" fill="#c8f06e" opacity=".4"/>
+      <circle cx="156" cy="130" r="2" fill="#3aab75" opacity=".5"/>
+      <rect x="16" y="208" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
+      <rect x="30" y="226" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".5"/>
+    </svg>`
+  },
+  {
+    title: "Ember Fields",
+    author: "Sofía Reyes",
+    genre: "Fantasía",
+    rating: "4.8",
+    reads: "88K lecturas",
+    badgeColor: "#f9a84e",
+    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
+      <rect width="172" height="258" fill="#150800"/>
+      <path d="M0 175 Q43 150 86 170 Q129 190 172 162 L172 258 L0 258Z" fill="#3d1800"/>
+      <path d="M0 205 Q55 185 100 202 Q145 218 172 192 L172 258 L0 258Z" fill="#f9a84e" opacity=".25"/>
+      <circle cx="86" cy="88" r="42" fill="#3d1800"/>
+      <circle cx="86" cy="88" r="28" fill="#f9a84e" opacity=".5"/>
+      <circle cx="86" cy="88" r="14" fill="#ffd07a" opacity=".8"/>
+      <path d="M86 60 Q92 74 86 88 Q80 74 86 60Z" fill="#ff6b00" opacity=".8"/>
+      <path d="M114 88 Q100 94 86 88 Q100 82 114 88Z" fill="#ff6b00" opacity=".7"/>
+      <circle cx="22" cy="38" r="3" fill="#f9a84e" opacity=".4"/>
+      <circle cx="152" cy="48" r="2.5" fill="#f9a84e" opacity=".35"/>
+      <circle cx="160" cy="155" r="2" fill="#ffd07a" opacity=".4"/>
+      <rect x="16" y="208" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
+      <rect x="30" y="226" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".5"/>
+    </svg>`
+  },
+  {
+    title: "Petal Storm",
+    author: "Isabella Flores",
+    genre: "Romance",
+    rating: "4.6",
+    reads: "67K lecturas",
+    badgeColor: "#ff8aa0",
+    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
+      <rect width="172" height="258" fill="#1a0514"/>
+      <g opacity=".6">
+        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff6b9d" transform="rotate(0 86 90)"/>
+        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff99bb" transform="rotate(45 86 90)"/>
+        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff6b9d" transform="rotate(90 86 90)"/>
+        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff99bb" transform="rotate(135 86 90)"/>
+        <circle cx="86" cy="90" r="10" fill="#ffd7ec" opacity=".8"/>
+      </g>
+      <g opacity=".25" transform="translate(20,20) scale(.5)">
+        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff99bb" transform="rotate(20 86 90)"/>
+        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff6b9d" transform="rotate(80 86 90)"/>
+        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff99bb" transform="rotate(140 86 90)"/>
+        <circle cx="86" cy="90" r="10" fill="#ffd7ec"/>
+      </g>
+      <g opacity=".2" transform="translate(100,10) scale(.45)">
+        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff99bb" transform="rotate(30 86 90)"/>
+        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff6b9d" transform="rotate(100 86 90)"/>
+        <circle cx="86" cy="90" r="10" fill="#ffd7ec"/>
+      </g>
+      <rect x="16" y="208" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
+      <rect x="30" y="226" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".5"/>
+    </svg>`
+  },
+  {
+    title: "Starless Night",
+    author: "Diego Soto",
+    genre: "Misterio",
+    rating: "4.7",
+    reads: "81K lecturas",
+    badgeColor: "#a78bf7",
+    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
+      <rect width="172" height="258" fill="#050510"/>
+      <circle cx="38" cy="62" r="38" fill="#1e1a3e" opacity=".6"/>
+      <circle cx="38" cy="62" r="26" fill="#2d2860" opacity=".8"/>
+      <circle cx="48" cy="56" r="18" fill="#050510" opacity=".9"/>
+      <circle cx="12" cy="22" r="2" fill="white" opacity=".85"/>
+      <circle cx="70" cy="15" r="1.5" fill="white" opacity=".7"/>
+      <circle cx="145" cy="28" r="2" fill="white" opacity=".6"/>
+      <circle cx="162" cy="88" r="1.5" fill="white" opacity=".6"/>
+      <circle cx="100" cy="12" r="1.5" fill="white" opacity=".5"/>
+      <circle cx="6" cy="108" r="2" fill="white" opacity=".5"/>
+      <circle cx="158" cy="165" r="1.5" fill="#a78bf7" opacity=".5"/>
+      <circle cx="42" cy="168" r="2" fill="#a78bf7" opacity=".4"/>
+      <path d="M20 200 L86 140 L152 200Z" fill="#a78bf7" opacity=".07"/>
+      <rect x="16" y="208" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
+      <rect x="30" y="226" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".5"/>
+      <rect x="38" y="240" width="80" height="5" rx="2.5" fill="#6b6b80" opacity=".35"/>
+    </svg>`
+  },
+  {
+    title: "Neon Gospel",
+    author: "Martina Lee",
+    genre: "Ciencia ficción",
+    rating: "4.9",
+    reads: "143K lecturas",
+    badgeColor: "#c8f06e",
+    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
+      <rect width="172" height="258" fill="#080d08"/>
+      <rect x="0" y="0" width="172" height="258" fill="url(#ng)" opacity=".3"/>
+      <defs>
+        <linearGradient id="ng" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#c8f06e" stop-opacity=".2"/>
+          <stop offset="1" stop-color="#080d08" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <rect x="70" y="20" width="4" height="218" rx="2" fill="#c8f06e" opacity=".6"/>
+      <rect x="86" y="20" width="2" height="170" rx="1" fill="#c8f06e" opacity=".3"/>
+      <rect x="98" y="20" width="3" height="200" rx="1.5" fill="#c8f06
+    
