@@ -78,16 +78,8 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'nextstory',       # <-- Cambia esto
-        'USER': 'root',                 # <-- Cambia esto (ej: root)
-        'PASSWORD': '',          # <-- Cambia esto
-        'HOST': '127.0.0.1',                       # <-- O localhost
-        'PORT': '3306',                            # <-- El puerto de Workbench
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            'charset': 'utf8mb4',
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -134,7 +126,7 @@ PASSWORD_RESET_CONFIRM_URL = 'users:password_reset_confirm'
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3 
 
 # Redirección después de iniciar sesión
-LOGIN_REDIRECT_URL = '/inicio/'
+LOGIN_REDIRECT_URL = '/home/'
 
 # Redirección después de cerrar sesión (opcional, para que vuelva al inicio)
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = 'welcome'

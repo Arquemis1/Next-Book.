@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Administración — NextStory</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0e0e10; --surface:#16161a; --surface2:#1f1f25; --surface3:#27272f;
+  --border:#2a2a32; --accent:#c8f06e; --accent2:#a8d84e; --danger:#ff5c5c;
+  --warning:#ffb74d; --success:#4cd137;
+  --text:#e8e8f0; --muted:#6b6b80; --muted2:#3a3a48;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:400;overflow-x:hidden;line-height:1.6;}
+
+/* NAVBAR */
+header{display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:68px;position:sticky;top:0;z-index:200;background:rgba(14,14,16,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-mark{width:32px;height:32px;background:var(--accent);border-radius:8px;display:grid;place-items:center;}
+.logo-mark svg{width:16px;height:16px;}
+.logo-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;color:var(--text);letter-spacing:-.02em;}
+.nav-back{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.85rem;text-decoration:none;transition:color .2s;}
+.nav-back:hover{color:var(--accent);}
+.user-info{display:flex;align-items:center;gap:12px;}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#000;display:grid;place-items:center;font-weight:bold;font-size:.8rem;}
+
+/* LAYOUT */
+.admin-layout{max-width:1200px;margin:0 auto;padding:30px 5%;display:grid;grid-template-columns:220px 1fr;gap:30px;}
+
+/* SIDEBAR */
+.sidebar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 0;height:fit-content;position:sticky;top:80px;}
+.sidebar-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:0 20px 12px;margin-bottom:10px;border-bottom:1px solid var(--border);}
+.sidebar-nav{display:flex;flex-direction:column;}
+.sidebar-link{display:flex;align-items:center;gap:10px;padding:12px 20px;color:var(--text);text-decoration:none;font-size:.9rem;transition:background .2s,color .2s;}
+.sidebar-link:hover{background:var(--surface2);color:var(--accent);}
+.sidebar-link.active{background:var(--accent);color:#0e0e10;font-weight:500;}
+.sidebar-link.danger{color:var(--danger);}
+.sidebar-link.danger:hover{background:rgba(255,92,92,.1);}
+
+/* MAIN CONTENT */
+.main-content{}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:15px;}
+.page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:#fff;}
+.btn{padding:9px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;text-decoration:none;border:none;transition:background .2s;}
+.btn-solid{background:var(--accent);color:#0e0e10;}
+.btn-solid:hover{background:var(--accent2);}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-danger:hover{background:#ff3b3b;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;margin-bottom:40px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:8px;}
+.stat-value{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;color:#fff;line-height:1;}
+.stat-label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+.stat-change{font-size:.75rem;display:flex;align-items:center;gap:4px;}
+.stat-change.up{color:var(--success);}
+.stat-change.down{color:var(--danger);}
+
+/* CARDS & TABLES */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:30px;overflow:hidden;}
+.card-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.card-title{font-weight:600;font-size:1rem;}
+.card-body{padding:20px;}
+
+.table-wrapper{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:12px 15px;text-align:left;border-bottom:1px solid var(--border);font-size:.88rem;}
+th{color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;font-size:.75rem;}
+tr:hover{background:var(--surface2);}
+.badge{padding:4px 8px;border-radius:4px;font-size:.7rem;font-weight:500;text-transform:uppercase;}
+.badge-success{background:rgba(76,209,55,.15);color:var(--success);}
+.badge-warning{background:rgba(255,183,77,.15);color:var(--warning);}
+.badge-danger{background:rgba(255,92,92,.15);color:var(--danger);}
+.badge-muted{background:var(--muted2);color:var(--muted);}
+
+/* FORM ELEMENTS */
+.form-group{margin-bottom:20px;}
+label{display:block;margin-bottom:8px;font-size:.88rem;color:var(--text);}
+input,select,textarea{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:.88rem;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+
+/* TABS */
+.tabs-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.tab{padding:10px 18px;font-size:.88rem;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s;background:none;border:none;font-family:'DM Sans',sans-serif;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab:hover{color:var(--text);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;margin-top:40px;}
+.footer-copy{font-size:.8rem;color:var(--muted);}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .admin-layout{grid-template-columns:1fr;}
+  .sidebar{position:static;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header>
+  <a class="logo" href="{% url 'blog:welcome' %}">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="12" rx="1.5" fill="#0e0e10"/><rect x="9" y="2" width="5" height="8" rx="1.5" fill="#0e0e10"/></svg>
+    </div>
+    <span class="logo-name">NextStory</span>
+  </a>
+  <a class="nav-back" href="{% url 'blog:home' %}">← Volver al sitio</a>
+  <div class="user-info">
+    <span style="font-size:.85rem;color:var(--muted);">Administrador</span>
+    <div class="user-avatar">{{ user.nombre|first|upper }}</div>
+  </div>
+</header>
+
+<div class="admin-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h3 class="sidebar-title">Gestión</h3>
+    <nav class="sidebar-nav">
+      <a class="sidebar-link active" onclick="switchSidebar(this,'tab-dashboard')">📊 Dashboard</a>
+      <a class="sidebar-link" onclick="switchSidebar(this,'tab-usuarios')">👤 Usuarios</a>
+      <a class="sidebar-link" onclick="switchSidebar(this,'tab-libros')">📚 Libros</a>
+      <a class="sidebar-link" onclick="switchSidebar(this,'tab-categorias')">🏷️ Categorías</a>
+      <a class="sidebar-link" onclick="switchSidebar(this,'tab-reportes')">⚠️ Reportes</a>
+    </nav>
+    <div style="border-top:1px solid var(--border);margin-top:15px;padding-top:15px;">
+      <a class="sidebar-link danger" href="{% url 'blog:logout' %}">🚪 Cerrar sesión</a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- DASHBOARD TAB -->
+    <div id="tab-dashboard" class="tab-content active">
+      <div class="page-header">
+        <h1 class="page-title">Panel de Control</h1>
+        <span style="color:var(--muted);font-size:.9rem;">Última actualización: {{ fecha_actual|date:"d F Y H:i" }}</span>
+      </div>
+
+      <!-- ESTADÍSTICAS GENERALES -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">{{ total_usuarios|default:0 }}</div>
+          <div class="stat-label">Usuarios registrados</div>
+          <div class="stat-change up">↑ {{ crecimiento_usuarios|default:0 }}% este mes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{ total_libros|default:0 }}</div>
+          <div class="stat-label">Libros publicados</div>
+          <div class="stat-change up">↑ {{ crecimiento_libros|default:0 }}% este mes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{ comentarios_pendientes|default:0 }}</div>
+          <div class="stat-label">Comentarios pendientes</div>
+          <div class="stat-change down">↓ {{ comentarios_resueltos|default:0 }} resueltos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{ reportes_activos|default:0 }}</div>
+          <div class="stat-label">Reportes activos</div>
+          <div class="stat-change down">⚠️ Requiere atención</div>
+        </div>
+      </div>
+
+      <!-- GRÁFICO / RESUMEN -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Actividad reciente</h3>
+        </div>
+        <div class="card-body" style="color:var(--muted);font-style:italic;">
+          Aquí se mostrarán gráficos de crecimiento, publicaciones y actividad (listo para integrar librerías como Chart.js).
+        </div>
+      </div>
+
+      <!-- ÚLTIMOS REGISTROS -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Últimos usuarios registrados</h3>
+          <a href="#" class="btn btn-ghost btn-sm">Ver todos</a>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Usuario</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for usuario in ultimos_usuarios %}
+              <tr>
+                <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
+                <td>@{{ usuario.nombre_usuario }}</td>
+                <td>{{ usuario.fecha_registro|date:"d/m/Y" }}</td>
+                <td><span class="badge badge-success">Activo</span></td>
+                <td><a href="{% url 'blog:perfil_usuario' usuario.id_usuario %}" class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Ver</a></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="5" style="color:var(--muted);text-align:center;">Sin registros nuevos</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- USUARIOS TAB -->
+    <div id="tab-usuarios" class="tab-content">
+      <div class="page-header">
+        <h1 class="page-title">Gestión de Usuarios</h1>
+        <div style="display:flex;gap:10px;">
+          <input type="text" placeholder="Buscar usuario..." style="width:250px;">
+          <button class="btn btn-solid">+ Nuevo usuario</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre completo</th>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Fecha registro</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for usuario in lista_usuarios %}
+              <tr>
+                <td>#{{ usuario.id_usuario }}</td>
+                <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
+                <td>@{{ usuario.nombre_usuario }}</td>
+                <td>
+                  {% if usuario.es_admin %}
+                    <span class="badge badge-warning">Admin</span>
+                  {% else %}
+                    <span class="badge badge-muted">Lector</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if usuario.activo %}
+                    <span class="badge badge-success">Activo</span>
+                  {% else %}
+                    <span class="badge badge-danger">Bloqueado</span>
+                  {% endif %}
+                </td>
+                <td>{{ usuario.fecha_registro|date:"d/m/Y" }}</td>
+                <td>
+                  <div style="display:flex;gap:6px;">
+                    <a href="{% url 'blog:perfil_usuario' usuario.id_usuario %}" class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Ver</a>
+                    <button class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Editar</button>
+                    {% if usuario.activo %}
+                      <button class="btn btn-danger" style="padding:4px 8px;font-size:.75rem;">Bloquear</button>
+                    {% else %}
+                      <button class="btn btn-solid" style="padding:4px 8px;font-size:.75rem;">Activar</button>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="7" style="color:var(--muted);text-align:center;">No hay usuarios registrados</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIBROS TAB -->
+    <div id="tab-libros" class="tab-content">
+      <div class="page-header">
+        <h1 class="page-title">Gestión de Libros</h1>
+        <div style="display:flex;gap:10px;">
+          <input type="text" placeholder="Buscar libro..." style="width:250px;">
+          <select>
+            <option>Todas las categorías</option>
+            <!-- Cargar desde modelo Categoría -->
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Categoría</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for libro in lista_libros %}
+              <tr>
+                <td>#{{ libro.id_libro }}</td>
+                <td>{{ libro.titulo }}</td>
+                <td>@{{ libro.usuario.nombre_usuario }}</td>
+                <td>{{ libro.categoria.nombre|default:"Sin categoría" }}</td>
+                <td>
+                  {% if libro.aprobado %}
+                    <span class="badge badge-success">Publicado</span>
+                  {% else %}
+                    <span class="badge badge-warning">Pendiente</span>
+                  {% endif %}
+                </td>
+                <td>{{ libro.fecha_creacion|date:"d/m/Y" }}</td>
+                <td>
+                  <div style="display:flex;gap:6px;">
+                    <a href="{% url 'blog:perfil_libro' libro.id_libro %}" class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Ver</a>
+                    <button class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Editar</button>
+                    {% if not libro.aprobado %}
+                      <button class="btn btn-solid" style="padding:4px 8px;font-size:.75rem;">Aprobar</button>
+                    {% endif %}
+                    <button class="btn btn-danger" style="padding:4px 8px;font-size:.75rem;">Eliminar</button>
+                  </div>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="7" style="color:var(--muted);text-align:center;">No hay libros registrados</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORÍAS TAB -->
+    <div id="tab-categorias" class="tab-content">
+      <div class="page-header">
+        <h1 class="page-title">Categorías y Géneros</h1>
+        <button class="btn btn-solid">+ Nueva categoría</button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Libros</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cat in lista_categorias %}
+              <tr>
+                <td>{{ cat.nombre }}</td>
+                <td style="color:var(--muted);font-size:.8rem;">{{ cat.descripcion|default:"Sin descripción" }}</td>
+                <td>{{ cat.cantidad_libros|default:0 }}</td>
+                <td>
+                  <div style="display:flex;gap:6px;">
+                    <button class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Editar</button>
+                    <button class="btn btn-danger" style="padding:4px 8px;font-size:.75rem;">Eliminar</button>
+                  </div>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" style="color:var(--muted);text-align:center;">No hay categorías creadas</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTES TAB -->
+    <div id="tab-reportes" class="tab-content">
+      <div class="page-header">
+        <h1 class="page-title">Reportes de Contenido</h1>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Casos pendientes de revisión</h3>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Motivo</th>
+                <th>Reportado por</th>
+                <th>Contenido</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for reporte in lista_reportes %}
+              <tr>
+                <td><span class="badge badge-danger">{{ reporte.motivo }}</span></td>
+                <td>@{{ reporte.usuario.nombre_usuario }}</td>
+                <td>{{ reporte.tipo_contenido }} #{{ reporte.id_contenido }}</td>
+                <td>{{ reporte.fecha_reporte|date:"d/m/Y" }}</td>
+                <td>
+                  <div style="display:flex;gap:6px;">
+                    <button class="btn btn-solid" style="padding:4px 8px;font-size:.75rem;">Resolver</button>
+                    <button class="btn btn-danger" style="padding:4px 8px;font-size:.75rem;">Eliminar contenido</button>
+                  </div>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="5" style="color:var(--muted);text-align:center;">No hay reportes activos</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-copy">© 2026 NextStory — Panel de Administración</span>
+</footer>
+
+<script>
+function switchSidebar(el, id) {
+  // Remover activo de enlaces
+  document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+  el.classList.add('active');
+  // Ocultar todos los contenidos
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  // Mostrar el seleccionado
+  document.getElementById(id).classList.add('active');
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,578 @@
+¡Listo! Aquí tienes el archivo **`perfil_libro.html`** **COMPLETO Y MODIFICADO**, con todos los cambios integrados para que funcione dinámicamente con tu base de datos y tu proyecto Django.
+
+Simplemente **reemplaza todo el contenido que me pasaste por este código**, y funcionará perfecto:
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ libro.titulo }} — NextStory</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0e0e10; --surface:#16161a; --surface2:#1f1f25;
+  --border:#2a2a32; --accent:#c8f06e; --accent2:#a8d84e;
+  --text:#e8e8f0; --muted:#6b6b80; --muted2:#3a3a48;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:400;overflow-x:hidden;line-height:1.6;}
+
+/* NAVBAR */
+header{display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:68px;position:sticky;top:0;z-index:200;background:rgba(14,14,16,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-mark{width:32px;height:32px;background:var(--accent);border-radius:8px;display:grid;place-items:center;}
+.logo-mark svg{width:16px;height:16px;}
+.logo-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;color:var(--text);letter-spacing:-.02em;}
+.nav-back{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.85rem;text-decoration:none;transition:color .2s;}
+.nav-back:hover{color:var(--accent);}
+.nav-actions{display:flex;align-items:center;gap:10px;}
+.btn-ghost{background:none;border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;transition:border-color .2s,color .2s;text-decoration:none;}
+.btn-ghost:hover{border-color:var(--muted);color:#fff;}
+.btn-solid{background:var(--accent);border:none;color:#0e0e10;padding:8px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:background .2s;text-decoration:none;}
+.btn-solid:hover{background:var(--accent2);}
+
+/* ── HERO BANNER ── */
+.book-hero{position:relative;height:340px;overflow:hidden;background:#08080f;}
+.hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse 55% 70% at 28% 55%, rgba(255,200,80,.07) 0%, transparent 65%);}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(8,8,15,.97) 35%,rgba(8,8,15,.65) 68%,rgba(8,8,15,.2) 100%);}
+.hero-stars{position:absolute;inset:0;overflow:hidden;}
+.hero-content{position:relative;z-index:3;display:flex;align-items:center;gap:40px;padding:36px 5%;height:100%;}
+
+/* COVER — El Principito */
+.cover-wrap{flex-shrink:0;width:152px;}
+.cover-3d{width:152px;height:228px;border-radius:4px 10px 10px 4px;display:block;box-shadow:-4px 4px 0 #ffc857, 0 24px 60px rgba(0,0,0,.8);position:relative;}
+
+.hero-meta{flex:1;max-width:520px;}
+.book-genre-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,200,80,.1);border:1px solid rgba(255,200,80,.25);border-radius:100px;padding:4px 13px;font-size:.72rem;font-weight:600;color:#ffc857;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;}
+.book-title{font-family:'Syne',sans-serif;font-weight:800;font-size:2.5rem;color:#fff;letter-spacing:-.03em;line-height:1.05;margin-bottom:6px;}
+.book-subtitle{font-size:.9rem;color:#ffc857;font-style:italic;margin-bottom:10px;font-weight:300;}
+.book-author{font-size:.9rem;color:var(--muted);margin-bottom:16px;}
+.book-author span{color:var(--text);font-weight:500;}
+.star-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.stars{color:#ffc857;font-size:1rem;letter-spacing:2px;}
+.rating-num{font-family:'Syne',sans-serif;font-weight:700;color:#fff;font-size:1.1rem;}
+.rating-count{font-size:.8rem;color:var(--muted);}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-read{background:var(--accent);color:#0e0e10;border:none;padding:10px 24px;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;transition:background .2s,transform .15s;}
+.btn-read:hover{background:var(--accent2);transform:translateY(-1px);}
+.btn-save{background:none;border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:500;font-size:.88rem;cursor:pointer;display:flex;align-items:center;gap:7px;transition:border-color .2s,color .2s;}
+.btn-save.active{border-color:#ff6b9d;color:#ff6b9d;}
+
+
+.btn-descargar{
+    display:inline-block;
+    padding:12px 24px;
+    background:#2563eb;
+    color:white;
+    text-decoration:none;
+    border-radius:10px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.btn-descargar:hover{
+    background:#1d4ed8;
+    transform:translateY(-2px);
+}
+
+/* BG ART */
+.hero-bg-art{position:absolute;right:2%;top:50%;transform:translateY(-50%);z-index:1;opacity:.13;}
+
+/* STATS BAR */
+.stats-bar{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:14px 5%;display:flex;gap:0;}
+.stat-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;}
+.stat-item+.stat-item::before{content:'';position:absolute;left:0;top:15%;height:70%;width:1px;background:var(--border);}
+.stat-val{font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;color:#fff;}
+.stat-lbl{font-size:.7rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;}
+
+/* TABS */
+.tabs-bar{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 5%;background:var(--surface);}
+.tab{padding:14px 22px;font-size:.88rem;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab:hover{color:var(--text);}
+
+/* ── PAGE LAYOUT ── */
+.page-wrap{display:grid;grid-template-columns:1fr 300px;gap:48px;padding:40px 5%;align-items:start;}
+.left-col{}
+.right-col{position:sticky;top:84px;}
+
+/* SECTION LABEL */
+.sec-label{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:14px;}
+
+/* SINOPSIS */
+.synopsis-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:28px;}
+.synopsis-text{font-size:.95rem;line-height:1.85;color:#b8b8cc;font-weight:300;}
+.synopsis-hidden{display:none;}
+.read-more-btn{background:none;border:none;color:var(--accent);font-size:.84rem;font-family:'DM Sans',sans-serif;cursor:pointer;padding:0;margin-top:12px;display:flex;align-items:center;gap:5px;transition:opacity .2s;}
+.read-more-btn:hover{opacity:.8;}
+
+/* ── READER (centro) ── */
+.reader-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:28px;}
+.reader-top-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--border);background:var(--surface2);}
+.chapter-selector{display:flex;align-items:center;gap:8px;}
+.chapter-label{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:#fff;}
+.chapter-arrow{background:none;border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:.85rem;transition:border-color .2s,color .2s;display:grid;place-items:center;}
+.chapter-arrow:hover{border-color:var(--accent);color:var(--accent);}
+.reader-tools{display:flex;gap:6px;align-items:center;}
+.r-tool{background:none;border:1px solid var(--border);color:var(--muted);padding:5px 11px;border-radius:7px;font-size:.76rem;cursor:pointer;transition:border-color .2s,color .2s;font-family:'DM Sans',sans-serif;}
+.r-tool:hover,.r-tool.active{border-color:var(--accent);color:var(--accent);}
+.reader-body{padding:32px 44px;min-height:320px;transition:background .3s,color .3s;}
+.reader-body.day-mode{background:#f7f2e8;color:#2a2220;}
+.reader-body p{margin-bottom:1.5em;line-height:2;font-size:1rem;color:#c4c4d8;font-weight:300;}
+.reader-body.day-mode p{color:#3a3028;}
+.reader-body p:first-child::first-letter{font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;color:#ffc857;float:left;line-height:.82;margin-right:12px;margin-top:6px;}
+.reader-body.day-mode p:first-child::first-letter{color:#c8940a;}
+.reader-bottom-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-top:1px solid var(--border);background:var(--surface2);}
+.progress-wrap{flex:1;margin:0 18px;}
+.prog-label{font-size:.7rem;color:var(--muted);margin-bottom:5px;display:flex;justify-content:space-between;}
+.prog-track{height:3px;background:var(--muted2);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s;}
+.nav-btn{background:none;border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:8px;font-size:.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .2s,color .2s;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* CHAPTERS LIST */
+.chapters-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:28px;}
+.ch-item{display:flex;align-items:center;gap:14px;padding:13px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .18s;}
+.ch-item:last-child{border-bottom:none;}
+.ch-item:hover{background:var(--surface2);}
+.ch-item.current{background:rgba(200,240,110,.05);border-left:3px solid var(--accent);}
+.ch-num{font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;color:var(--accent);min-width:20px;}
+.ch-info{flex:1;}
+.ch-name{font-size:.88rem;font-weight:500;color:var(--text);}
+.ch-words{font-size:.74rem;color:var(--muted);margin-top:2px;}
+.ch-badge{font-size:.66rem;font-weight:600;letter-spacing:.05em;padding:2px 7px;border-radius:4px;}
+.ch-free{background:rgba(200,240,110,.12);color:var(--accent);border:1px solid rgba(200,240,110,.2);}
+.ch-lock{color:var(--muted2);}
+
+/* COMMENTS */
+.comments-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:28px;}
+.comment-input-row{display:flex;gap:12px;margin-bottom:22px;align-items:flex-start;}
+.u-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:700;flex-shrink:0;}
+.comment-box{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;resize:none;outline:none;min-height:60px;transition:border-color .2s;}
+.comment-box:focus{border-color:var(--accent);}
+.c-submit{background:var(--accent);border:none;color:#0e0e10;padding:9px 18px;border-radius:8px;font-weight:600;font-size:.84rem;cursor:pointer;font-family:'DM Sans',sans-serif;align-self:flex-end;}
+.comment{display:flex;gap:12px;margin-bottom:18px;}
+.comment:last-child{margin-bottom:0;}
+.c-body{flex:1;}
+.c-header{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;}
+.c-user{font-weight:600;font-size:.87rem;color:var(--text);}
+.c-time{font-size:.73rem;color:var(--muted);}
+.c-badge-tag{font-size:.63rem;font-weight:600;letter-spacing:.05em;padding:1px 6px;border-radius:4px;background:rgba(255,200,80,.12);color:#ffc857;border:1px solid rgba(255,200,80,.2);}
+.c-text{font-size:.86rem;color:#afafc8;line-height:1.65;}
+.c-actions{display:flex;gap:12px;margin-top:7px;}
+.c-action{background:none;border:none;color:var(--muted);font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:4px;transition:color .2s;padding:0;}
+.c-action:hover{color:var(--accent);}
+.c-action.liked{color:#ff6b9d;}
+
+/* ── RIGHT COLUMN ── */
+.r-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:18px;}
+.r-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;color:#fff;margin-bottom:14px;}
+
+/* BOOK INFO */
+.info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border);}
+.info-row:last-child{border-bottom:none;}
+.info-key{font-size:.78rem;color:var(--muted);}
+.info-val{font-size:.8rem;color:var(--text);font-weight:500;text-align:right;max-width:55%;}
+.genre-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.g-chip{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:4px 11px;border-radius:100px;font-size:.74rem;}
+
+/* AUTHOR */
+.auth-avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#2a1a00,#ffc857);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#0e0e10;margin:0 auto 10px;}
+.auth-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.93rem;color:#fff;text-align:center;margin-bottom:4px;}
+.auth-dates{font-size:.76rem;color:#ffc857;text-align:center;margin-bottom:6px;}
+.auth-bio{font-size:.78rem;color:var(--muted);text-align:center;line-height:1.6;}
+.auth-stats{display:flex;justify-content:center;gap:20px;margin-top:12px;}
+.as-num{font-family:'Syne',sans-serif;font-weight:700;color:#fff;text-align:center;font-size:.95rem;}
+.as-lbl{font-size:.67rem;color:var(--muted);text-align:center;margin-top:1px;}
+.btn-follow{width:100%;margin-top:12px;background:none;border:1px solid var(--border);color:var(--text);padding:8px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.84rem;cursor:pointer;transition:border-color .2s,color .2s;}
+.btn-follow:hover{border-color:var(--accent);color:var(--accent);}
+
+/* RATING */
+.rating-big{font-family:'Syne',sans-serif;font-weight:800;font-size:2.8rem;color:#fff;line-height:1;text-align:center;}
+.rating-stars-big{color:#ffc857;font-size:1rem;letter-spacing:3px;text-align:center;margin:4px 0;}
+.rating-count-sm{font-size:.73rem;color:var(--muted);text-align:center;}
+.r-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.r-lbl{font-size:.74rem;color:var(--muted);min-width:10px;text-align:right;}
+.r-track{flex:1;height:4px;background:var(--muted2);border-radius:2px;overflow:hidden;}
+.r-fill{height:100%;background:#ffc857;border-radius:2px;}
+.r-pct{font-size:.7rem;color:var(--muted);min-width:28px;}
+
+/* SIMILAR */
+.sim-book{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .2s;}
+.sim-book:last-child{border-bottom:none;}
+.sim-book:hover{opacity:.8;}
+.sim-cov{width:40px;height:60px;border-radius:5px;overflow:hidden;flex-shrink:0;}
+.sim-cov svg{width:40px;height:60px;display:block;}
+.sim-i{flex:1;}
+.sim-t{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:2px;}
+.sim-a{font-size:.73rem;color:var(--muted);}
+.sim-r{font-size:.71rem;color:#ffc857;margin-top:2px;}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:24px 0;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
+.footer-copy{font-size:.8rem;color:var(--muted);}
+.footer-links{display:flex;gap:20px;}
+.footer-links a{font-size:.8rem;color:var(--muted);text-decoration:none;transition:color .2s;}
+.footer-links a:hover{color:var(--text);}
+
+/* TABS content */
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header>
+  <a class="logo" href="{% url 'blog:welcome' %}">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="12" rx="1.5" fill="#0e0e10"/><rect x="9" y="2" width="5" height="8" rx="1.5" fill="#0e0e10"/></svg>
+    </div>
+    <span class="logo-name">NextStory</span>
+  </a>
+  <a class="nav-back" href="{% url 'blog:home' %}">← Volver al inicio</a>
+  <div class="nav-actions">
+    {% if user.is_authenticated %}
+      <a class="btn-ghost" href="{% url 'blog:mi_perfil' %}">Mi Perfil</a>
+    {% else %}
+      <a class="btn-ghost" href="#">Iniciar sesión</a>
+      <a class="btn-solid" href="#">Registrarse</a>
+    {% endif %}
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<div class="book-hero">
+  <div class="hero-glow"></div>
+
+  <!-- BG art: planeta con rosa -->
+  <div class="hero-bg-art">
+    <svg width="380" height="320" viewBox="0 0 380 320" xmlns="http://www.w3.org/2000/svg">
+      <!-- planeta -->
+      <ellipse cx="200" cy="230" rx="140" ry="38" fill="#ffc857" opacity=".18"/>
+      <circle cx="200" cy="180" r="95" fill="#1a120a" opacity=".9"/>
+      <circle cx="200" cy="180" r="95" fill="none" stroke="#ffc857" stroke-width="1.5" opacity=".3"/>
+      <!-- continente simple -->
+      <path d="M145 160 Q165 140 195 155 Q220 165 240 150 Q255 140 260 162 Q265 185 245 195 Q220 205 195 198 Q165 195 148 182 Z" fill="#2a1a00" opacity=".8"/>
+      <!-- pequeño principito -->
+      <circle cx="200" cy="90" r="8" fill="#ffd07a"/>
+      <rect x="196" y="98" width="8" height="18" rx="3" fill="#5a3e1b"/>
+      <line x1="200" y1="108" x2="188" y2="118" stroke="#5a3e1b" stroke-width="2" stroke-linecap="round"/>
+      <line x1="200" y1="108" x2="212" y2="118" stroke="#5a3e1b" stroke-width="2" stroke-linecap="round"/>
+      <line x1="200" y1="116" x2="194" y2="132" stroke="#5a3e1b" stroke-width="2" stroke-linecap="round"/>
+      <line x1="200" y1="116" x2="206" y2="132" stroke="#5a3e1b" stroke-width="2" stroke-linecap="round"/>
+      <!-- rosa -->
+      <line x1="320" y1="80" x2="320" y2="160" stroke="#3aab75" stroke-width="2"/>
+      <circle cx="320" cy="72" r="12" fill="#ff6b9d" opacity=".9"/>
+      <circle cx="316" cy="76" r="8" fill="#ff8ab5" opacity=".7"/>
+      <circle cx="324" cy="68" r="7" fill="#ffaacb" opacity=".6"/>
+      <!-- estrellas -->
+      <circle cx="60" cy="40" r="1.5" fill="#ffc857" opacity=".7"/>
+      <circle cx="340" cy="30" r="1.5" fill="white" opacity=".6"/>
+      <circle cx="100" cy="80" r="1" fill="white" opacity=".5"/>
+      <circle cx="300" cy="60" r="1" fill="white" opacity=".5"/>
+      <circle cx="50" cy="140" r="1.5" fill="#ffc857" opacity=".4"/>
+      <circle cx="370" cy="120" r="1" fill="white" opacity=".4"/>
+      <circle cx="140" cy="25" r="1" fill="white" opacity=".5"/>
+      <circle cx="250" cy="15" r="1.5" fill="#ffc857" opacity=".5"/>
+    </svg>
+  </div>
+
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+
+    <!-- PORTADA SVG estilo ilustración original -->
+    <div class="cover-wrap">
+      <svg class="cover-3d" viewBox="0 0 152 228" xmlns="http://www.w3.org/2000/svg">
+        <!-- fondo cielo nocturno -->
+        <rect width="152" height="228" fill="#0d1428"/>
+        <!-- estrellas -->
+        <circle cx="20" cy="18" r="1.2" fill="white" opacity=".8"/>
+        <circle cx="135" cy="12" r="1" fill="white" opacity=".7"/>
+        <circle cx="60" cy="8" r="0.8" fill="white" opacity=".6"/>
+        <circle cx="110" cy="30" r="1" fill="white" opacity=".5"/>
+        <circle cx="30" cy="45" r="0.7" fill="white" opacity=".5"/>
+        <circle cx="140" cy="55" r="1.2" fill="white" opacity=".6"/>
+        <circle cx="80" cy="22" r="0.8" fill="#ffc857" opacity=".8"/>
+        <circle cx="15" cy="70" r="0.7" fill="white" opacity=".4"/>
+        <circle cx="145" cy="80" r="0.8" fill="#ffc857" opacity=".5"/>
+        <!-- planeta -->
+        <ellipse cx="76" cy="165" rx="60" ry="16" fill="#c8860a" opacity=".3"/>
+        <circle cx="76" cy="148" r="42" fill="#1e2d12"/>
+        <circle cx="76" cy="148" r="42" fill="none" stroke="#ffc857" stroke-width="1" opacity=".4"/>
+        <!-- superficie planeta -->
+        <path d="M45 148 Q60 136 80 143 Q100 150 110 140 Q118 132 120 148 Q122 165 105 172 Q85 178 65 174 Q46 170 44 158 Z" fill="#2d4518" opacity=".9"/>
+        <!-- pequeño principito sobre planeta -->
+        <circle cx="76" cy="108" r="7" fill="#ffd07a"/>
+        <rect x="72.5" y="115" width="7" height="15" rx="2.5" fill="#4a8c3f"/>
+        <!-- bufanda -->
+        <path d="M70 117 Q76 120 82 117" stroke="#ff6b9d" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- brazos -->
+        <line x1="76" y1="120" x2="66" y2="127" stroke="#4a8c3f" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="76" y1="120" x2="86" y2="127" stroke="#4a8c3f" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- piernas -->
+        <line x1="74" y1="130" x2="70" y2="142" stroke="#4a8c3f" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="78" y1="130" x2="82" y2="142" stroke="#4a8c3f" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- rosa a la derecha -->
+        <line x1="118" y1="108" x2="118" y2="148" stroke="#3aab75" stroke-width="1.5"/>
+        <ellipse cx="112" cy="106" rx="7" ry="5" fill="#ff6b9d" opacity=".9"/>
+        <ellipse cx="118" cy="103" rx="6" ry="4" fill="#ff8ab5" opacity=".8"/>
+        <ellipse cx="124" cy="107" rx="5" ry="4" fill="#ffaacb" opacity=".7"/>
+        <!-- título -->
+        <rect x="0" y="188" width="152" height="40" fill="#0a0e1c" opacity=".9"/>
+        <text x="76" y="204" font-family="Georgia,serif" font-size="10" font-weight="bold" fill="#ffc857" text-anchor="middle" letter-spacing="1">{{ libro.titulo }}</text>
+        <text x="76" y="218" font-family="Georgia,serif" font-size="7" fill="#8888aa" text-anchor="middle">{{ libro.autor|default:"Desconocido" }}</text>
+        <!-- spine color -->
+        <rect x="0" y="0" width="6" height="228" fill="#ffc857" opacity=".7"/>
+      </svg>
+    </div>
+
+    <div class="hero-meta">
+      <div class="book-genre-tag">✦ {{ libro.genero|default:"Sin género" }}</div>
+      <div class="book-title">{{ libro.titulo }}</div>
+      <div class="book-subtitle">{{ libro.subtitulo|default:"" }}</div>
+      <div class="book-author">por <span>{{ libro.autor|default:"Autor desconocido" }}</span> · {{ libro.fecha_creacion.year }}</div>
+      <div class="star-row">
+        <span class="stars">★★★★★</span>
+        <span class="rating-num">4.9</span>
+        <span class="rating-count">· 1.2M valoraciones</span>
+      </div>
+      <div class="hero-actions">
+        <button class="btn-read" onclick="goToReader()">▶ Leer ahora</button>
+        <a href="{{ libro.archivo_pdf.url }}" class="btn-descargar" download>⬇ Descargar PDF</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-val">{{ libro.capitulos|default:"?" }}</div><div class="stat-lbl">Capítulos</div></div>
+  <div class="stat-item"><div class="stat-val">{{ libro.estado|default:"Publicado" }}</div><div class="stat-lbl">Estado</div></div>
+  <div class="stat-item"><div class="stat-val">{{ libro.fecha_creacion.year }}</div><div class="stat-lbl">Año</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-bar">
+  <button class="tab active" onclick="switchTab(this,'tab-main')">Descripción</button>
+  <button class="tab" onclick="switchTab(this,'tab-comments')">Comentarios</button>
+</div>
+
+<!-- ══ PAGE CONTENT ══ -->
+<div class="page-wrap">
+
+  <!-- ── LEFT COLUMN ── -->
+  <div class="left-col">
+
+    <!-- TAB: DESCRIPCIÓN -->
+    <div id="tab-main" class="tab-content active">
+
+      <!-- 1. SINOPSIS -->
+      <div class="synopsis-card">
+        <div class="sec-label">Sinopsis</div>
+        <div class="synopsis-text">
+          <p>{{ libro.sinopsis|linebreaksbr }}</p>
+        </div>
+      </div>
+
+      <!-- 2. LECTOR (EN EL CENTRO, entre sinopsis y detalles) -->
+      <div id="reader-area">
+        <div class="sec-label">Leer ahora</div>
+        <div class="reader-card" id="reader">
+            <div class="reader-card" id="reader">
+
+    <div class="reader-top-bar">
+        <span class="chapter-label">📖 {{ libro.titulo }}</span>
+    </div>
+
+    <div class="pdf-container">
+        <iframe
+            id="pdfViewer"
+            src="{{ libro.archivo_pdf.url }}"
+            width="125%"
+            height="900px"
+            style="border:none;">
+        </iframe>
+    </div>
+
+</div>
+         
+
+    <!-- TAB: COMENTARIOS -->
+    <div id="tab-comments" class="tab-content">
+      <div class="comments-card">
+        <div class="sec-label" style="margin-bottom:18px;">Comentarios</div>
+        <div class="comment-input-row">
+          <div class="u-avatar" style="background:linear-gradient(135deg,#2d1b4e,#a78bf7);">TU</div>
+          <textarea class="comment-box" id="newComment" placeholder="¿Qué te pareció este libro?"></textarea>
+          <button class="c-submit" onclick="submitComment()">Publicar</button>
+        </div>
+        <div id="commentList"></div>
+      </div>
+    </div>
+
+  </div><!-- /left-col -->
+
+  <!-- ── RIGHT COLUMN ── -->
+  <div class="right-col">
+
+    <!-- AUTOR -->
+    <div class="r-card">
+      <div class="auth-avatar">{{ libro.autor|first|upper }}</div>
+      <div class="auth-name">{{ libro.autor|default:"Desconocido" }}</div>
+      <div class="auth-dates">1900 – 1944 · Francia</div>
+      <div class="auth-bio">Escritor, poeta y aviador francés.</div>
+      <div class="auth-stats">
+        <div><div class="as-num">8</div><div class="as-lbl">Obras</div></div>
+        <div><div class="as-num">200M</div><div class="as-lbl">Copias</div></div>
+        <div><div class="as-num">4.9★</div><div class="as-lbl">Media</div></div>
+      </div>
+      <button class="btn-follow" id="followBtn" onclick="toggleFollow()">+ Seguir autor</button>
+    </div>
+
+    <!-- DETALLES -->
+    <div class="r-card">
+      <div class="r-card-title">Detalles del libro</div>
+      <div class="info-row"><div class="info-key">Título original</div><div class="info-val">{{ libro.titulo }}</div></div>
+      <div class="info-row"><div class="info-key">Publicación</div><div class="info-val">{{ libro.fecha_creacion|date:"d F, Y" }}</div></div>
+      <div class="info-row"><div class="info-key">Estado</div><div class="info-val">{{ libro.estado }}</div></div>
+      <div class="info-row"><div class="info-key">Capítulos</div><div class="info-val">{{ libro.capitulos|default:"-" }}</div></div>
+      <div class="info-row"><div class="info-key">Idioma original</div><div class="info-val">{{ libro.idioma|default:"Español" }}</div></div>
+      <div class="info-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
+        <div class="info-key">Géneros</div>
+        <div class="genre-chips">
+          <div class="g-chip">{{ libro.genero|default:"Sin clasificar" }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIBROS SIMILARES -->
+    <div class="r-card">
+      <div class="r-card-title">También te puede gustar</div>
+      {% for libro_similar in libros_similares %}
+      <div class="sim-book" onclick="window.location.href='{% url 'blog:perfil_libro' libro_similar.id_libro %}'">
+        <div class="sim-cov">
+          <svg viewBox="0 0 40 60"><rect width="40" height="60" fill="#1a0d14"/><circle cx="20" cy="22" r="12" fill="#c8940a" opacity=".5"/><circle cx="20" cy="22" r="7" fill="#ffc857" opacity=".7"/><rect x="4" y="48" width="32" height="4" rx="2" fill="#e8e8f0" opacity=".6"/></svg>
+        </div>
+        <div class="sim-i">
+          <div class="sim-t">{{ libro_similar.titulo }}</div>
+          <div class="sim-a">{{ libro_similar.autor|default:"-" }}</div>
+          <div class="sim-r">★★★★★ 4.7</div>
+        </div>
+      </div>
+      {% empty %}
+      <p style="color:var(--muted); font-size:.8rem;">No hay recomendaciones por ahora.</p>
+      {% endfor %}
+    </div>
+
+  </div><!-- /right-col -->
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-copy">© 2026 NextStory</span>
+  <div class="footer-links">
+    <a href="#">Acerca de</a>
+    <a href="#">Privacidad</a>
+    <a href="#">Términos</a>
+    <a href="#">Contacto</a>
+  </div>
+</footer>
+
+<script>
+
+
+// Add remaining chapter stubs
+for(let i=7; i<=27; i++){
+  chapters.push({n:i, title:`Capítulo ${toRoman(i)}`, subtitle:chapterSubtitle(i), words:'~280 palabras', text:`[Contenido del Capítulo ${i}. Puedes reemplazar este texto con el contenido real del libro.]`});
+}
+
+function toRoman(n){
+  const r=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI','XXII','XXIII','XXIV','XXV','XXVI','XXVII'];
+  return r[n-1]||n;
+}
+function chapterSubtitle(n){
+  const subs={7:'El rey y su planeta',8:'El vanidoso',9:'El bebedor',10:'El hombre de negocios',11:'El farolero',12:'El geógrafo',13:'La Tierra',14:'La flor del desierto',15:'El encuentro con la serpiente',16:'La montaña',17:'Las flores y los hombres',18:'El jardín de rosas',19:'El zorro',20:'Las agujas',21:'El guardagujas',22:'El mercader',23:'El pozo en el desierto',24:'El veneno',25:'El regreso',26:'La despedida',27:'Epilogo'};
+  return subs[n]||'';
+}
+
+/* ── READER STATE ── */
+let currentChapter = 0;
+let fontSize = 16;
+let dayMode = false;
+let serifMode = false;
+
+function renderChapter(){
+  const ch = chapters[currentChapter];
+  const body = document.getElementById('readerBody');
+  const paras = ch.text.split('\n\n').filter(p=>p.trim());
+  body.innerHTML = paras.map(p=>`<p>${p.trim()}</p>`).join('');
+  document.getElementById('chapterTitle').textContent = ch.title;
+  const pct = Math.round(((currentChapter+1)/chapters.length)*100);
+  document.getElementById('progText').textContent = `Capítulo ${currentChapter+1} de ${chapters.length}`;
+  document.getElementById('progPct').textContent = pct+'%';
+  document.getElementById('progFill').style.width = pct+'%';
+  // update active in chapter list
+  document.querySelectorAll('.ch-item').forEach((el,i)=>{
+    el.classList.toggle('current', i===currentChapter);
+  });
+}
+function nextChapter(){ if(currentChapter<chapters.length-1){currentChapter++;renderChapter();document.getElementById('reader').scrollIntoView({behavior:'smooth',block:'start'});}}
+function prevChapter(){ if(currentChapter>0){currentChapter--;renderChapter();document.getElementById('reader').scrollIntoView({behavior:'smooth',block:'start'});}}
+function changeFont(d){ fontSize=Math.min(20,Math.max(13,fontSize+d)); document.getElementById('readerBody').style.fontSize=fontSize+'px';}
+function toggleDay(){
+  dayMode=!dayMode;
+  document.getElementById('readerBody').classList.toggle('day-mode',dayMode);
+  document.getElementById('dayBtn').textContent=dayMode?'☀':'☾';
+}
+function toggleSerif(){
+  serifMode=!serifMode;
+  document.getElementById('readerBody').style.fontFamily=serifMode?'Georgia,serif':"'DM Sans',sans-serif";
+  document.getElementById('serifBtn').classList.toggle('active',serifMode);
+}
+function goToReader(){
+  switchTab(document.querySelectorAll('.tab')[0],'tab-main');
+  setTimeout(()=>document.getElementById('reader').scrollIntoView({behavior:'smooth'}),90);
+}
+renderChapter();
+
+/* ── CHAPTER LIST ── */
+const cl = document.getElementById('chapterList');
+chapters.forEach((ch,i)=>{
+  const d=document.createElement('div');
+  d.className='ch-item'+(i===0?' current':'');
+  d.innerHTML=`<div class="ch-num">${toRoman(ch.n)}</div><div class="ch-info"><div class="ch-name">${ch.title}${ch.subtitle?` — ${ch.subtitle}`:''}</div><div class="ch-words">${ch.words}</div></div><span class="ch-badge ${i<6?'ch-free':'ch-lock'}">${i<6?'GRATIS':'🔒'}</span>`;
+  d.onclick=()=>{currentChapter=i;renderChapter();switchTab(document.querySelectorAll('.tab')[0],'tab-main');setTimeout(()=>document.getElementById('reader').scrollIntoView({behavior:'smooth'}),100);};
+  cl.appendChild(d);
+});
+
+/* ── COMMENTS ── */
+const commentsData=[
+  {user:"MariaL",init:"ML",color:"linear-gradient(135deg,#2a1a00,#ffc857)",time:"Hace 1 hora",badge:"CLÁSICO LOVER",text:"Este libro me cambió la vida cuando lo leí a los 12 años y cada vez que lo releo a los 34 sigue haciéndome llorar. 'Lo esencial es invisible a los ojos' es la frase más poderosa que se ha escrito.",likes:842,liked:false},
+  {user:"CarlosR",init:"CR",color:"linear-gradient(135deg,#0f3460,#7cc3ff)",time:"Hace 3 horas",badge:"",text:"La escena del zorro y la domesticación es filosofía pura. Saint-Exupéry escribió para adultos disfrazado de libro infantil. Maravilloso.",likes:512,liked:true},
+  {user:"SofiaV",init:"SV",color:"linear-gradient(135deg,#1a3d24,#3aab75)",time:"Hace 1 día",badge:"TOP LECTOR",text:"Lo leí primero en francés y luego en español. Hay algo en 'apprivoiser' (domesticar) que se pierde en la traducción pero que igual llega al corazón en cualquier idioma.",likes:389,liked:false},
+  {user:"JuanP",init:"JP",color:"linear-gradient(135deg,#3d1225,#ff8aa0)",time:"Hace 2 días",badge:"",text:"Los baobabs como metáfora de los malos hábitos que hay que arrancar antes de que crezcan... increíble que esto lo hayan escrito para niños. O quizás justamente por eso funciona.",likes:267,liked:false},
+];
+
+function renderComments(arr){
+  const cl2=document.getElementById('commentList');
+  cl2.innerHTML='';
+  arr.forEach((c,i)=>{
+    const d=document.createElement('div');d.className='comment';
+    d.innerHTML=`<div class="u-avatar" style="background:${c.color}">${c.init}</div>
+    <div class="c-body">
+      <div class="c-header">
+        <span class="c-user">${c.user}</span>
+        ${c.badge?`<span class="c-badge-tag">${c.badge}</span>`:''}
+        <span class="c-time">${c.time}</span>
+      </div>
+      <div class="c-text">${c.text}</div>
+      <div class="c-actions">
+        <button class="c-action ${c.liked?'liked':''}" onclick="toggleLike(${i},this)">♡ <span>${c.likes}</span></button>
+        <button class="c-action">↩
