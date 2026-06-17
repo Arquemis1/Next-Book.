@@ -21,9 +21,10 @@ from blog import views as blog_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # 👇 Esta línea es la clave: Llamamos a las rutas de tu aplicación blog
+    # ✅ Rutas de tu aplicación principal (blog)
     path('', include('blog.urls')), 
 
-    # 👇 Rutas de cuentas separadas
+    # ✅ Rutas de cuentas (Login, Registro, Logout)
+    # Coincide exactamente con los enlaces que pusimos: /accounts/login/, /accounts/register/
     path('accounts/', include('users.urls')),
 ]

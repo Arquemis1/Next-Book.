@@ -355,12 +355,14 @@ header {
   transition: transform .42s cubic-bezier(.4,0,.2,1);
 }
 
-/* BOOK CARD */
+/* BOOK CARD - ✅ MODIFICADA PARA DATOS REALES */
 .bcard {
   min-width: 172px;
   flex-shrink: 0;
   cursor: pointer;
   transition: transform .22s ease;
+  text-decoration: none;
+  color: inherit;
 }
 
 .bcard:hover { transform: translateY(-4px); }
@@ -372,12 +374,15 @@ header {
   overflow: hidden;
   position: relative;
   background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bcard-cover svg {
-  width: 100%;
-  height: 100%;
-  display: block;
+  width: 50%;
+  height: auto;
+  opacity: 0.3;
 }
 
 .bcard-cover-overlay {
@@ -411,12 +416,19 @@ header {
   color: var(--text);
   line-height: 1.25;
   margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .bcard-author {
   font-size: .78rem;
   color: var(--muted);
   font-weight: 300;
+  text-decoration: none;
+}
+.bcard-author:hover {
+  color: var(--accent);
 }
 
 .bcard-meta {
@@ -525,6 +537,8 @@ footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .footer-copy {
@@ -535,6 +549,7 @@ footer {
 .footer-links {
   display: flex;
   gap: 22px;
+  flex-wrap: wrap;
 }
 
 .footer-links a {
@@ -601,7 +616,7 @@ footer {
 
 <!-- ── NAVBAR ──────────────────────────── -->
 <header>
-<a class="logo" href="{% url 'blog:home' %}"> 
+<a class="logo" href="{% url 'blog:welcome' %}"> 
     <div class="logo-mark">
       <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="2" y="2" width="5" height="12" rx="1.5" fill="#0e0e10"/>
@@ -620,18 +635,40 @@ footer {
 
   <div class="nav-actions">
     {% if user.is_authenticated %}
+    <a class="btn-ghost" href="{% url 'blog:subir_libro' %}">+ Subir Libro</a>
+    
     <div class="user-menu">
-      <button class="user-btn">👤 {{ user.username }} ▾</button>
+      <button class="user-btn">👤 
+        {% comment %} ✅ ARREGLADO: Lectura segura de datos, sin errores si faltan valores {% endcomment %}
+        {% if perfil_real and perfil_real.username %}
+            {{ perfil_real.username }}
+        {% elif usuario_real %}
+            {{ usuario_real.nombre }} {{ usuario_real.apellido }}
+        {% else %}
+            {{ user.username|default:"Usuario" }}
+        {% endif %}
+       ▾</button>
       <div class="user-dropdown">
-        <a href="#">Mi Perfil</a>
+        {# ✅ ARREGLADO: Enlaces seguros y compatibles con tus rutas #}
+        {% if usuario_real %}
+          <a href="{% url 'blog:perfil_usuario' usuario_real.pk %}">Mi Perfil</a>
+        {% else %}
+          <a href="/accounts/login/">Iniciar sesión</a>
+        {% endif %}
         <a href="#">Mensajes</a>
         <a href="#">Mis Historias</a>
-        <a href="{% url 'users:logout' %}">Cerrar sesión</a>
+        {% comment %} ✅ ARREGLADO: Verificación de administrador segura {% endcomment %}
+        {% if es_administrador %}
+        <a href="{% url 'blog:panel_admin' %}">⚙️ Panel de Administración</a>
+        {% endif %}
+        <a href="/accounts/logout/">Cerrar sesión</a>
       </div>
     </div>
+
     {% else %}
-    <a class="btn-ghost" href="{% url 'users:login' %}">Iniciar sesión</a>
-    <a class="btn-solid" href="{% url 'users:register' %}">Registrarse</a>
+    {# ✅ ARREGLADO: VISTA PARA INVITADO / NO LOGEADO (SIN ERRORES DE RUTA) #}
+    <a class="btn-ghost" href="/accounts/login/">Iniciar sesión</a>
+    <a class="btn-solid" href="/accounts/register/">Registrarse</a>
     {% endif %}
   </div>
 </header>
@@ -648,11 +685,11 @@ footer {
     </div>
     <div class="hero-stats">
       <div>
-        <div class="stat-num">50K+</div>
+        <div class="stat-num">{{ total_libros|default:"50K+" }}</div>
         <div class="stat-label">Historias</div>
       </div>
       <div>
-        <div class="stat-num">120K</div>
+        <div class="stat-num">{{ total_usuarios|default:"120K" }}</div>
         <div class="stat-label">Lectores</div>
       </div>
       <div>
@@ -724,7 +761,43 @@ footer {
   <div class="carousel-outer">
     <button class="c-arrow" id="prev">‹</button>
     <div class="carousel-track-wrap">
-      <div class="carousel-track" id="track"></div>
+      <div class="carousel-track" id="track">
+        
+        <!-- ✅ AQUÍ ES DONDE SE MUESTRAN TUS LIBROS REALES DE LA BASE DE DATOS -->
+        {% for libro in libros %}
+        <a href="{% url 'blog:perfil_libro' libro.id_libro %}" class="bcard">
+          <div class="bcard-cover">
+            <!-- Icono por defecto si no tienes imagen -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+            <div class="bcard-cover-overlay"></div>
+            <span class="bcard-badge">{{ libro.estado|default:"Libro" }}</span>
+          </div>
+          <div class="bcard-info">
+            <div class="bcard-title">{{ libro.titulo }}</div>
+            <!-- ✅ ENLACE AL PERFIL DEL AUTOR (CORREGIDO PARA TU ESTRUCTURA) -->
+            {% for autor_link in libro.autorlibro_set.all %}
+              <a href="{% url 'blog:perfil_usuario' autor_link.usuario.id %}" class="bcard-author">
+                @{{ autor_link.usuario.perfil.username|default:"autor" }}
+              </a>
+            {% empty %}
+              <span class="bcard-author">@autor desconocido</span>
+            {% endfor %}
+            
+            <div class="bcard-meta">
+              <span class="bcard-rating">★★★★★</span>
+              <span class="bcard-reads">{{ libro.fecha_creacion|date:"Y" }}</span>
+            </div>
+          </div>
+        </a>
+        {% empty %}
+        <!-- Si no hay libros -->
+        <p style="color:var(--muted); padding: 20px;">Aún no hay libros publicados.</p>
+        {% endfor %}
+
+      </div>
     </div>
     <button class="c-arrow" id="next">›</button>
   </div>
@@ -764,196 +837,71 @@ footer {
 </footer>
 
 <script>
-const books = [
-  {
-    title: "Eclipse",
-    author: "Camila Torres",
-    genre: "Fantasía",
-    rating: "4.9",
-    reads: "128K lecturas",
-    badgeColor: "#7cc3ff",
-    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
-      <rect width="172" height="258" fill="#0d1520"/>
-      <circle cx="86" cy="100" r="65" fill="#0f3460" opacity=".5"/>
-      <circle cx="86" cy="100" r="46" fill="#0f3460" opacity=".7"/>
-      <circle cx="86" cy="100" r="28" fill="#c8f06e" opacity=".15"/>
-      <circle cx="86" cy="100" r="14" fill="#c8f06e" opacity=".8"/>
-      <circle cx="96" cy="92" r="20" fill="#0d1520" opacity=".9"/>
-      <circle cx="20" cy="38" r="2.5" fill="#c8f06e" opacity=".5"/>
-      <circle cx="148" cy="28" r="2" fill="#c8f06e" opacity=".4"/>
-      <circle cx="155" cy="170" r="2" fill="#7cc3ff" opacity=".4"/>
-      <circle cx="16" cy="190" r="2.5" fill="#7cc3ff" opacity=".3"/>
-      <rect x="16" y="210" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
-      <rect x="30" y="228" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".55"/>
-      <rect x="40" y="242" width="80" height="5" rx="2.5" fill="#6b6b80" opacity=".35"/>
-    </svg>`
-  },
-  {
-    title: "Soft Rain",
-    author: "Lucía Mora",
-    genre: "Romance",
-    rating: "4.8",
-    reads: "95K lecturas",
-    badgeColor: "#ff8aa0",
-    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
-      <rect width="172" height="258" fill="#1e0d14"/>
-      <path d="M0 140 Q43 110 86 135 Q129 160 172 128 L172 258 L0 258Z" fill="#3d1225" opacity=".9"/>
-      <path d="M0 175 Q50 148 100 168 Q140 185 172 160 L172 258 L0 258Z" fill="#ff8aa0" opacity=".2"/>
-      <circle cx="86" cy="85" r="50" fill="#3d1225"/>
-      <circle cx="86" cy="85" r="34" fill="#5c1c30"/>
-      <circle cx="86" cy="85" r="18" fill="#ff8aa0" opacity=".7"/>
-      <path d="M60 85 Q86 65 112 85" stroke="#ff8aa0" stroke-width="2" fill="none" opacity=".5"/>
-      <circle cx="24" cy="32" r="3" fill="#ff8aa0" opacity=".4"/>
-      <circle cx="150" cy="42" r="2.5" fill="#ff8aa0" opacity=".3"/>
-      <circle cx="155" cy="145" r="2" fill="#ffd7ec" opacity=".4"/>
-      <rect x="16" y="208" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
-      <rect x="30" y="226" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".5"/>
-    </svg>`
-  },
-  {
-    title: "Moon Letters",
-    author: "Andrés Vidal",
-    genre: "Misterio",
-    rating: "4.7",
-    reads: "74K lecturas",
-    badgeColor: "#a78bf7",
-    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
-      <rect width="172" height="258" fill="#0a0a1a"/>
-      <circle cx="120" cy="70" r="48" fill="#1e1a3e" opacity=".8"/>
-      <circle cx="120" cy="70" r="34" fill="#2d2860" opacity=".9"/>
-      <circle cx="133" cy="62" r="26" fill="#0a0a1a" opacity=".95"/>
-      <circle cx="12" cy="25" r="2" fill="white" opacity=".8"/>
-      <circle cx="55" cy="18" r="1.5" fill="white" opacity=".6"/>
-      <circle cx="160" cy="130" r="2" fill="white" opacity=".7"/>
-      <circle cx="8" cy="100" r="1.5" fill="white" opacity=".5"/>
-      <circle cx="145" cy="20" r="1.5" fill="white" opacity=".6"/>
-      <circle cx="40" cy="170" r="2" fill="#a78bf7" opacity=".4"/>
-      <path d="M20 200 L86 145 L152 200Z" fill="#a78bf7" opacity=".08"/>
-      <rect x="16" y="208" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
-      <rect x="30" y="226" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".5"/>
-      <rect x="38" y="240" width="80" height="5" rx="2.5" fill="#6b6b80" opacity=".35"/>
-    </svg>`
-  },
-  {
-    title: "Wild Shores",
-    author: "Valeria Ruiz",
-    genre: "Aventura",
-    rating: "4.9",
-    reads: "110K lecturas",
-    badgeColor: "#3aab75",
-    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
-      <rect width="172" height="258" fill="#071510"/>
-      <rect x="0" y="160" width="172" height="98" fill="#0f2b1a"/>
-      <path d="M0 160 Q43 145 86 162 Q129 178 172 155 L172 258 L0 258Z" fill="#1a4a28" opacity=".9"/>
-      <path d="M0 190 Q55 172 100 188 Q145 205 172 182 L172 258 L0 258Z" fill="#3aab75" opacity=".3"/>
-      <path d="M72 160 L86 40 L100 160Z" fill="#2d6e40" opacity=".85"/>
-      <path d="M58 160 L86 75 L114 160Z" fill="#3aab75" opacity=".5"/>
-      <circle cx="38" cy="50" r="24" fill="#1a3a10"/>
-      <circle cx="38" cy="50" r="16" fill="#2d6e20" opacity=".8"/>
-      <circle cx="38" cy="50" r="8" fill="#c8f06e" opacity=".6"/>
-      <circle cx="148" cy="38" r="3" fill="#c8f06e" opacity=".4"/>
-      <circle cx="156" cy="130" r="2" fill="#3aab75" opacity=".5"/>
-      <rect x="16" y="208" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
-      <rect x="30" y="226" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".5"/>
-    </svg>`
-  },
-  {
-    title: "Ember Fields",
-    author: "Sofía Reyes",
-    genre: "Fantasía",
-    rating: "4.8",
-    reads: "88K lecturas",
-    badgeColor: "#f9a84e",
-    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
-      <rect width="172" height="258" fill="#150800"/>
-      <path d="M0 175 Q43 150 86 170 Q129 190 172 162 L172 258 L0 258Z" fill="#3d1800"/>
-      <path d="M0 205 Q55 185 100 202 Q145 218 172 192 L172 258 L0 258Z" fill="#f9a84e" opacity=".25"/>
-      <circle cx="86" cy="88" r="42" fill="#3d1800"/>
-      <circle cx="86" cy="88" r="28" fill="#f9a84e" opacity=".5"/>
-      <circle cx="86" cy="88" r="14" fill="#ffd07a" opacity=".8"/>
-      <path d="M86 60 Q92 74 86 88 Q80 74 86 60Z" fill="#ff6b00" opacity=".8"/>
-      <path d="M114 88 Q100 94 86 88 Q100 82 114 88Z" fill="#ff6b00" opacity=".7"/>
-      <circle cx="22" cy="38" r="3" fill="#f9a84e" opacity=".4"/>
-      <circle cx="152" cy="48" r="2.5" fill="#f9a84e" opacity=".35"/>
-      <circle cx="160" cy="155" r="2" fill="#ffd07a" opacity=".4"/>
-      <rect x="16" y="208" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
-      <rect x="30" y="226" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".5"/>
-    </svg>`
-  },
-  {
-    title: "Petal Storm",
-    author: "Isabella Flores",
-    genre: "Romance",
-    rating: "4.6",
-    reads: "67K lecturas",
-    badgeColor: "#ff8aa0",
-    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
-      <rect width="172" height="258" fill="#1a0514"/>
-      <g opacity=".6">
-        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff6b9d" transform="rotate(0 86 90)"/>
-        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff99bb" transform="rotate(45 86 90)"/>
-        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff6b9d" transform="rotate(90 86 90)"/>
-        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff99bb" transform="rotate(135 86 90)"/>
-        <circle cx="86" cy="90" r="10" fill="#ffd7ec" opacity=".8"/>
-      </g>
-      <g opacity=".25" transform="translate(20,20) scale(.5)">
-        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff99bb" transform="rotate(20 86 90)"/>
-        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff6b9d" transform="rotate(80 86 90)"/>
-        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff99bb" transform="rotate(140 86 90)"/>
-        <circle cx="86" cy="90" r="10" fill="#ffd7ec"/>
-      </g>
-      <g opacity=".2" transform="translate(100,10) scale(.45)">
-        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff99bb" transform="rotate(30 86 90)"/>
-        <ellipse cx="86" cy="90" rx="10" ry="28" fill="#ff6b9d" transform="rotate(100 86 90)"/>
-        <circle cx="86" cy="90" r="10" fill="#ffd7ec"/>
-      </g>
-      <rect x="16" y="208" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
-      <rect x="30" y="226" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".5"/>
-    </svg>`
-  },
-  {
-    title: "Starless Night",
-    author: "Diego Soto",
-    genre: "Misterio",
-    rating: "4.7",
-    reads: "81K lecturas",
-    badgeColor: "#a78bf7",
-    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
-      <rect width="172" height="258" fill="#050510"/>
-      <circle cx="38" cy="62" r="38" fill="#1e1a3e" opacity=".6"/>
-      <circle cx="38" cy="62" r="26" fill="#2d2860" opacity=".8"/>
-      <circle cx="48" cy="56" r="18" fill="#050510" opacity=".9"/>
-      <circle cx="12" cy="22" r="2" fill="white" opacity=".85"/>
-      <circle cx="70" cy="15" r="1.5" fill="white" opacity=".7"/>
-      <circle cx="145" cy="28" r="2" fill="white" opacity=".6"/>
-      <circle cx="162" cy="88" r="1.5" fill="white" opacity=".6"/>
-      <circle cx="100" cy="12" r="1.5" fill="white" opacity=".5"/>
-      <circle cx="6" cy="108" r="2" fill="white" opacity=".5"/>
-      <circle cx="158" cy="165" r="1.5" fill="#a78bf7" opacity=".5"/>
-      <circle cx="42" cy="168" r="2" fill="#a78bf7" opacity=".4"/>
-      <path d="M20 200 L86 140 L152 200Z" fill="#a78bf7" opacity=".07"/>
-      <rect x="16" y="208" width="140" height="9" rx="4.5" fill="#e8e8f0" opacity=".85"/>
-      <rect x="30" y="226" width="100" height="5" rx="2.5" fill="#6b6b80" opacity=".5"/>
-      <rect x="38" y="240" width="80" height="5" rx="2.5" fill="#6b6b80" opacity=".35"/>
-    </svg>`
-  },
-  {
-    title: "Neon Gospel",
-    author: "Martina Lee",
-    genre: "Ciencia ficción",
-    rating: "4.9",
-    reads: "143K lecturas",
-    badgeColor: "#c8f06e",
-    art: `<svg viewBox="0 0 172 258" xmlns="http://www.w3.org/2000/svg">
-      <rect width="172" height="258" fill="#080d08"/>
-      <rect x="0" y="0" width="172" height="258" fill="url(#ng)" opacity=".3"/>
-      <defs>
-        <linearGradient id="ng" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#c8f06e" stop-opacity=".2"/>
-          <stop offset="1" stop-color="#080d08" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      <rect x="70" y="20" width="4" height="218" rx="2" fill="#c8f06e" opacity=".6"/>
-      <rect x="86" y="20" width="2" height="170" rx="1" fill="#c8f06e" opacity=".3"/>
-      <rect x="98" y="20" width="3" height="200" rx="1.5" fill="#c8f06
-    
+// ✅ El carrusel sigue funcionando igual, pero ahora usa tus libros
+const track = document.getElementById('track');
+const dotsContainer = document.getElementById('dots');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+
+let currentIndex = 0;
+let visibleCards = 4; // Valor por defecto, se ajusta en móvil
+let cardWidth = 0;
+let gap = 16;
+
+// Calcular cuántas tarjetas se ven
+function updateVisibleCards() {
+  if (window.innerWidth < 768) visibleCards = 2;
+  else if (window.innerWidth < 1024) visibleCards = 3;
+  else visibleCards = 4;
+  
+  if(track.firstChild) {
+    cardWidth = track.firstChild.offsetWidth;
+  }
+  updateCarousel();
+}
+
+// Mover el carrusel
+function updateCarousel() {
+  const offset = -currentIndex * (cardWidth + gap);
+  track.style.transform = `translateX(${offset}px)`;
+  
+  // Actualizar dots
+  document.querySelectorAll('.c-dot').forEach((d,i) => {
+    d.classList.toggle('active', i === currentIndex);
+  });
+  
+  // Desactivar flechas si llega al final
+  prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
+  nextBtn.style.opacity = currentIndex >= track.children.length - visibleCards ? '0.3' : '1';
+}
+
+// Eventos
+prevBtn.onclick = () => {
+  if (currentIndex > 0) {
+    currentIndex--;
+    updateCarousel();
+  }
+};
+
+nextBtn.onclick = () => {
+  if (currentIndex < track.children.length - visibleCards) {
+    currentIndex++;
+    updateCarousel();
+  }
+};
+
+// Crear dots
+for(let i=0; i<Math.ceil(track.children.length / visibleCards); i++) {
+  const d = document.createElement('button');
+  d.className = 'c-dot';
+  d.onclick = () => { currentIndex = i; updateCarousel(); };
+  dotsContainer.appendChild(d);
+}
+
+// Responsive
+window.addEventListener('resize', updateVisibleCards);
+window.addEventListener('load', updateVisibleCards);
+
+</script>
+</body>
+</html>

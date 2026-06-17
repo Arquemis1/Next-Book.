@@ -116,7 +116,8 @@ footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;marg
   <a class="nav-back" href="{% url 'blog:home' %}">← Volver al sitio</a>
   <div class="user-info">
     <span style="font-size:.85rem;color:var(--muted);">Administrador</span>
-    <div class="user-avatar">{{ user.nombre|first|upper }}</div>
+    <!-- ✅ CORREGIDO: Tu usuario tiene nombre y apellido, NO nombres ni apellidos -->
+    <div class="user-avatar">{{ usuario_actual.nombre|first|upper }}</div>
   </div>
 </header>
 
@@ -130,6 +131,7 @@ footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;marg
       <a class="sidebar-link" onclick="switchSidebar(this,'tab-libros')">📚 Libros</a>
       <a class="sidebar-link" onclick="switchSidebar(this,'tab-categorias')">🏷️ Categorías</a>
       <a class="sidebar-link" onclick="switchSidebar(this,'tab-reportes')">⚠️ Reportes</a>
+      <a class="sidebar-link" onclick="switchSidebar(this,'tab-admins')">👑 Administradores</a>
     </nav>
     <div style="border-top:1px solid var(--border);margin-top:15px;padding-top:15px;">
       <a class="sidebar-link danger" href="{% url 'blog:logout' %}">🚪 Cerrar sesión</a>
@@ -193,21 +195,22 @@ footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;marg
                 <th>Nombre</th>
                 <th>Usuario</th>
                 <th>Fecha</th>
-                <th>Estado</th>
                 <th>Acción</th>
               </tr>
             </thead>
             <tbody>
               {% for usuario in ultimos_usuarios %}
               <tr>
+                <!-- ✅ CORREGIDO: nombre y apellido, no nombres ni apellidos -->
                 <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
-                <td>@{{ usuario.nombre_usuario }}</td>
-                <td>{{ usuario.fecha_registro|date:"d/m/Y" }}</td>
-                <td><span class="badge badge-success">Activo</span></td>
-                <td><a href="{% url 'blog:perfil_usuario' usuario.id_usuario %}" class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Ver</a></td>
+                <!-- ✅ CORREGIDO: nombre de usuario está en la tabla Perfil -->
+                <td>@{{ usuario.perfil.username|default:"Sin usuario" }}</td>
+                <!-- ✅ CORREGIDO: fecha está en Registro -->
+                <td>{{ usuario.registro.fecha_registro|date:"d/m/Y" }}</td>
+                <td><a href="{% url 'blog:perfil_usuario' usuario.id %}" class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Ver</a></td>
               </tr>
               {% empty %}
-              <tr><td colspan="5" style="color:var(--muted);text-align:center;">Sin registros nuevos</td></tr>
+              <tr><td colspan="4" style="color:var(--muted);text-align:center;">Sin registros nuevos</td></tr>
               {% endfor %}
             </tbody>
           </table>
@@ -233,8 +236,7 @@ footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;marg
                 <th>ID</th>
                 <th>Nombre completo</th>
                 <th>Usuario</th>
-                <th>Rol</th>
-                <th>Estado</th>
+                <th>Dirección / Estado</th>
                 <th>Fecha registro</th>
                 <th>Acciones</th>
               </tr>
@@ -242,38 +244,23 @@ footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;marg
             <tbody>
               {% for usuario in lista_usuarios %}
               <tr>
-                <td>#{{ usuario.id_usuario }}</td>
+                <!-- ✅ CORREGIDO: ID es solo 'id' -->
+                <td>#{{ usuario.id }}</td>
                 <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
-                <td>@{{ usuario.nombre_usuario }}</td>
-                <td>
-                  {% if usuario.es_admin %}
-                    <span class="badge badge-warning">Admin</span>
-                  {% else %}
-                    <span class="badge badge-muted">Lector</span>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if usuario.activo %}
-                    <span class="badge badge-success">Activo</span>
-                  {% else %}
-                    <span class="badge badge-danger">Bloqueado</span>
-                  {% endif %}
-                </td>
-                <td>{{ usuario.fecha_registro|date:"d/m/Y" }}</td>
+                <td>@{{ usuario.perfil.username|default:"-" }}</td>
+                <!-- ✅ CORREGIDO: campos reales de tu tabla Usuario -->
+                <td>{{ usuario.direccion|default:"-" }}, {{ usuario.estado|default:"-" }}</td>
+                <td>{{ usuario.registro.fecha_registro|date:"d/m/Y" }}</td>
                 <td>
                   <div style="display:flex;gap:6px;">
-                    <a href="{% url 'blog:perfil_usuario' usuario.id_usuario %}" class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Ver</a>
+                    <a href="{% url 'blog:perfil_usuario' usuario.id %}" class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Ver</a>
                     <button class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Editar</button>
-                    {% if usuario.activo %}
-                      <button class="btn btn-danger" style="padding:4px 8px;font-size:.75rem;">Bloquear</button>
-                    {% else %}
-                      <button class="btn btn-solid" style="padding:4px 8px;font-size:.75rem;">Activar</button>
-                    {% endif %}
+                    <button class="btn btn-danger" style="padding:4px 8px;font-size:.75rem;">Eliminar</button>
                   </div>
                 </td>
               </tr>
               {% empty %}
-              <tr><td colspan="7" style="color:var(--muted);text-align:center;">No hay usuarios registrados</td></tr>
+              <tr><td colspan="6" style="color:var(--muted);text-align:center;">No hay usuarios registrados</td></tr>
               {% endfor %}
             </tbody>
           </table>
@@ -289,7 +276,6 @@ footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;marg
           <input type="text" placeholder="Buscar libro..." style="width:250px;">
           <select>
             <option>Todas las categorías</option>
-            <!-- Cargar desde modelo Categoría -->
           </select>
         </div>
       </div>
@@ -302,7 +288,6 @@ footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;marg
                 <th>ID</th>
                 <th>Título</th>
                 <th>Autor</th>
-                <th>Categoría</th>
                 <th>Estado</th>
                 <th>Fecha</th>
                 <th>Acciones</th>
@@ -313,13 +298,21 @@ footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;marg
               <tr>
                 <td>#{{ libro.id_libro }}</td>
                 <td>{{ libro.titulo }}</td>
-                <td>@{{ libro.usuario.nombre_usuario }}</td>
-                <td>{{ libro.categoria.nombre|default:"Sin categoría" }}</td>
+                <!-- ✅ CORREGIDO: El autor se saca de la tabla intermedia AutorLibro -->
                 <td>
-                  {% if libro.aprobado %}
+                  {% for autor_link in libro.autorlibro_set.all %}
+                    @{{ autor_link.usuario.perfil.username|default:"Desconocido" }}
+                  {% empty %}
+                    Sin autor
+                  {% endfor %}
+                </td>
+                <td>
+                  {% if libro.estado == 'Publicado' %}
                     <span class="badge badge-success">Publicado</span>
-                  {% else %}
+                  {% elif libro.estado == 'Pendiente' %}
                     <span class="badge badge-warning">Pendiente</span>
+                  {% else %}
+                    <span class="badge badge-muted">{{ libro.estado|default:"Desconocido" }}</span>
                   {% endif %}
                 </td>
                 <td>{{ libro.fecha_creacion|date:"d/m/Y" }}</td>
@@ -327,15 +320,12 @@ footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;marg
                   <div style="display:flex;gap:6px;">
                     <a href="{% url 'blog:perfil_libro' libro.id_libro %}" class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Ver</a>
                     <button class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Editar</button>
-                    {% if not libro.aprobado %}
-                      <button class="btn btn-solid" style="padding:4px 8px;font-size:.75rem;">Aprobar</button>
-                    {% endif %}
                     <button class="btn btn-danger" style="padding:4px 8px;font-size:.75rem;">Eliminar</button>
                   </div>
                 </td>
               </tr>
               {% empty %}
-              <tr><td colspan="7" style="color:var(--muted);text-align:center;">No hay libros registrados</td></tr>
+              <tr><td colspan="6" style="color:var(--muted);text-align:center;">No hay libros registrados</td></tr>
               {% endfor %}
             </tbody>
           </table>
@@ -349,36 +339,10 @@ footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;marg
         <h1 class="page-title">Categorías y Géneros</h1>
         <button class="btn btn-solid">+ Nueva categoría</button>
       </div>
-
       <div class="card">
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Libros</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for cat in lista_categorias %}
-              <tr>
-                <td>{{ cat.nombre }}</td>
-                <td style="color:var(--muted);font-size:.8rem;">{{ cat.descripcion|default:"Sin descripción" }}</td>
-                <td>{{ cat.cantidad_libros|default:0 }}</td>
-                <td>
-                  <div style="display:flex;gap:6px;">
-                    <button class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;">Editar</button>
-                    <button class="btn btn-danger" style="padding:4px 8px;font-size:.75rem;">Eliminar</button>
-                  </div>
-                </td>
-              </tr>
-              {% empty %}
-              <tr><td colspan="4" style="color:var(--muted);text-align:center;">No hay categorías creadas</td></tr>
-              {% endfor %}
-            </tbody>
-          </table>
+        <div class="card-body" style="color:var(--muted);text-align:center;padding:40px;">
+          ❌ No tienes tabla de Categorías en tu base de datos. <br>
+          Puedes crearla o ignorar esta sección.
         </div>
       </div>
     </div>
@@ -407,10 +371,10 @@ footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;marg
             <tbody>
               {% for reporte in lista_reportes %}
               <tr>
-                <td><span class="badge badge-danger">{{ reporte.motivo }}</span></td>
-                <td>@{{ reporte.usuario.nombre_usuario }}</td>
-                <td>{{ reporte.tipo_contenido }} #{{ reporte.id_contenido }}</td>
-                <td>{{ reporte.fecha_reporte|date:"d/m/Y" }}</td>
+                <td><span class="badge badge-danger">{{ reporte.motivo|truncatechars:20 }}</span></td>
+                <td>@{{ reporte.usuario.perfil.username|default:"-" }}</td>
+                <td>Interacción #{{ reporte.interaccion.id_interaccion }}</td>
+                <td>{{ reporte.fecha|date:"d/m/Y" }}</td>
                 <td>
                   <div style="display:flex;gap:6px;">
                     <button class="btn btn-solid" style="padding:4px 8px;font-size:.75rem;">Resolver</button>
@@ -420,6 +384,44 @@ footer{border-top:1px solid var(--border);padding:20px 5%;text-align:center;marg
               </tr>
               {% empty %}
               <tr><td colspan="5" style="color:var(--muted);text-align:center;">No hay reportes activos</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ PESTAÑA: ADMINISTRADORES (CORREGIDA A TU TABLA) -->
+    <div id="tab-admins" class="tab-content">
+      <div class="page-header">
+        <h1 class="page-title">Gestión de Administradores</h1>
+        <button class="btn btn-solid">+ Agregar administrador</button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID Admin</th>
+                <th>Usuario</th>
+                <th>Nombre</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for admin in lista_administradores %}
+              <tr>
+                <!-- ✅ CORREGIDO: Tu campo es id_admin, NO id_administrador -->
+                <td>#{{ admin.id_admin }}</td>
+                <td>@{{ admin.usuario.perfil.username|default:"Sin usuario" }}</td>
+                <td>{{ admin.usuario.nombre }} {{ admin.usuario.apellido }}</td>
+                <td>
+                  <button class="btn btn-danger" style="padding:4px 8px;font-size:.75rem;">Quitar permiso</button>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" style="color:var(--muted);text-align:center;">No hay administradores registrados</td></tr>
               {% endfor %}
             </tbody>
           </table>

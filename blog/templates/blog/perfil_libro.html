@@ -1,8 +1,3 @@
-¡Listo! Aquí tienes el archivo **`perfil_libro.html`** **COMPLETO Y MODIFICADO**, con todos los cambios integrados para que funcione dinámicamente con tu base de datos y tu proyecto Django.
-
-Simplemente **reemplaza todo el contenido que me pasaste por este código**, y funcionará perfecto:
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -41,16 +36,18 @@ header{display:flex;align-items:center;justify-content:space-between;padding:0 5
 .hero-stars{position:absolute;inset:0;overflow:hidden;}
 .hero-content{position:relative;z-index:3;display:flex;align-items:center;gap:40px;padding:36px 5%;height:100%;}
 
-/* COVER — El Principito */
+/* COVER */
 .cover-wrap{flex-shrink:0;width:152px;}
-.cover-3d{width:152px;height:228px;border-radius:4px 10px 10px 4px;display:block;box-shadow:-4px 4px 0 #ffc857, 0 24px 60px rgba(0,0,0,.8);position:relative;}
+.cover-3d{width:152px;height:228px;border-radius:4px 10px 10px 4px;display:block;box-shadow:-4px 4px 0 #ffc857, 0 24px 60px rgba(0,0,0,.8);position:relative;background:var(--surface2);display:flex;align-items:center;justify-content:center;}
+.cover-3d svg{width:50%;height:auto;opacity:0.3;}
 
 .hero-meta{flex:1;max-width:520px;}
 .book-genre-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,200,80,.1);border:1px solid rgba(255,200,80,.25);border-radius:100px;padding:4px 13px;font-size:.72rem;font-weight:600;color:#ffc857;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;}
 .book-title{font-family:'Syne',sans-serif;font-weight:800;font-size:2.5rem;color:#fff;letter-spacing:-.03em;line-height:1.05;margin-bottom:6px;}
 .book-subtitle{font-size:.9rem;color:#ffc857;font-style:italic;margin-bottom:10px;font-weight:300;}
 .book-author{font-size:.9rem;color:var(--muted);margin-bottom:16px;}
-.book-author span{color:var(--text);font-weight:500;}
+.book-author a{color:var(--text);font-weight:500;text-decoration:none;}
+.book-author a:hover{color:var(--accent);}
 .star-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
 .stars{color:#ffc857;font-size:1rem;letter-spacing:2px;}
 .rating-num{font-family:'Syne',sans-serif;font-weight:700;color:#fff;font-size:1.1rem;}
@@ -60,7 +57,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:0 5
 .btn-read:hover{background:var(--accent2);transform:translateY(-1px);}
 .btn-save{background:none;border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:500;font-size:.88rem;cursor:pointer;display:flex;align-items:center;gap:7px;transition:border-color .2s,color .2s;}
 .btn-save.active{border-color:#ff6b9d;color:#ff6b9d;}
-
 
 .btn-descargar{
     display:inline-block;
@@ -72,7 +68,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:0 5
     font-weight:bold;
     transition:0.3s;
 }
-
 .btn-descargar:hover{
     background:#1d4ed8;
     transform:translateY(-2px);
@@ -224,6 +219,13 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
 /* TABS content */
 .tab-content{display:none;}
 .tab-content.active{display:block;}
+
+.pdf-container {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-top: 15px;
+}
 </style>
 </head>
 <body>
@@ -239,10 +241,10 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
   <a class="nav-back" href="{% url 'blog:home' %}">← Volver al inicio</a>
   <div class="nav-actions">
     {% if user.is_authenticated %}
-      <a class="btn-ghost" href="{% url 'blog:mi_perfil' %}">Mi Perfil</a>
+      <a class="btn-ghost" href="{% url 'blog:perfil_usuario' %}">Mi Perfil</a>
     {% else %}
-      <a class="btn-ghost" href="#">Iniciar sesión</a>
-      <a class="btn-solid" href="#">Registrarse</a>
+      <a class="btn-ghost" href="{% url 'blog:login' %}">Iniciar sesión</a>
+      <a class="btn-solid" href="{% url 'blog:registro' %}">Registrarse</a>
     {% endif %}
   </div>
 </header>
@@ -254,25 +256,20 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
   <!-- BG art: planeta con rosa -->
   <div class="hero-bg-art">
     <svg width="380" height="320" viewBox="0 0 380 320" xmlns="http://www.w3.org/2000/svg">
-      <!-- planeta -->
       <ellipse cx="200" cy="230" rx="140" ry="38" fill="#ffc857" opacity=".18"/>
       <circle cx="200" cy="180" r="95" fill="#1a120a" opacity=".9"/>
       <circle cx="200" cy="180" r="95" fill="none" stroke="#ffc857" stroke-width="1.5" opacity=".3"/>
-      <!-- continente simple -->
       <path d="M145 160 Q165 140 195 155 Q220 165 240 150 Q255 140 260 162 Q265 185 245 195 Q220 205 195 198 Q165 195 148 182 Z" fill="#2a1a00" opacity=".8"/>
-      <!-- pequeño principito -->
       <circle cx="200" cy="90" r="8" fill="#ffd07a"/>
       <rect x="196" y="98" width="8" height="18" rx="3" fill="#5a3e1b"/>
       <line x1="200" y1="108" x2="188" y2="118" stroke="#5a3e1b" stroke-width="2" stroke-linecap="round"/>
       <line x1="200" y1="108" x2="212" y2="118" stroke="#5a3e1b" stroke-width="2" stroke-linecap="round"/>
       <line x1="200" y1="116" x2="194" y2="132" stroke="#5a3e1b" stroke-width="2" stroke-linecap="round"/>
       <line x1="200" y1="116" x2="206" y2="132" stroke="#5a3e1b" stroke-width="2" stroke-linecap="round"/>
-      <!-- rosa -->
       <line x1="320" y1="80" x2="320" y2="160" stroke="#3aab75" stroke-width="2"/>
       <circle cx="320" cy="72" r="12" fill="#ff6b9d" opacity=".9"/>
       <circle cx="316" cy="76" r="8" fill="#ff8ab5" opacity=".7"/>
       <circle cx="324" cy="68" r="7" fill="#ffaacb" opacity=".6"/>
-      <!-- estrellas -->
       <circle cx="60" cy="40" r="1.5" fill="#ffc857" opacity=".7"/>
       <circle cx="340" cy="30" r="1.5" fill="white" opacity=".6"/>
       <circle cx="100" cy="80" r="1" fill="white" opacity=".5"/>
@@ -287,65 +284,44 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
   <div class="hero-overlay"></div>
   <div class="hero-content">
 
-    <!-- PORTADA SVG estilo ilustración original -->
+    <!-- PORTADA -->
     <div class="cover-wrap">
-      <svg class="cover-3d" viewBox="0 0 152 228" xmlns="http://www.w3.org/2000/svg">
-        <!-- fondo cielo nocturno -->
-        <rect width="152" height="228" fill="#0d1428"/>
-        <!-- estrellas -->
-        <circle cx="20" cy="18" r="1.2" fill="white" opacity=".8"/>
-        <circle cx="135" cy="12" r="1" fill="white" opacity=".7"/>
-        <circle cx="60" cy="8" r="0.8" fill="white" opacity=".6"/>
-        <circle cx="110" cy="30" r="1" fill="white" opacity=".5"/>
-        <circle cx="30" cy="45" r="0.7" fill="white" opacity=".5"/>
-        <circle cx="140" cy="55" r="1.2" fill="white" opacity=".6"/>
-        <circle cx="80" cy="22" r="0.8" fill="#ffc857" opacity=".8"/>
-        <circle cx="15" cy="70" r="0.7" fill="white" opacity=".4"/>
-        <circle cx="145" cy="80" r="0.8" fill="#ffc857" opacity=".5"/>
-        <!-- planeta -->
-        <ellipse cx="76" cy="165" rx="60" ry="16" fill="#c8860a" opacity=".3"/>
-        <circle cx="76" cy="148" r="42" fill="#1e2d12"/>
-        <circle cx="76" cy="148" r="42" fill="none" stroke="#ffc857" stroke-width="1" opacity=".4"/>
-        <!-- superficie planeta -->
-        <path d="M45 148 Q60 136 80 143 Q100 150 110 140 Q118 132 120 148 Q122 165 105 172 Q85 178 65 174 Q46 170 44 158 Z" fill="#2d4518" opacity=".9"/>
-        <!-- pequeño principito sobre planeta -->
-        <circle cx="76" cy="108" r="7" fill="#ffd07a"/>
-        <rect x="72.5" y="115" width="7" height="15" rx="2.5" fill="#4a8c3f"/>
-        <!-- bufanda -->
-        <path d="M70 117 Q76 120 82 117" stroke="#ff6b9d" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <!-- brazos -->
-        <line x1="76" y1="120" x2="66" y2="127" stroke="#4a8c3f" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="76" y1="120" x2="86" y2="127" stroke="#4a8c3f" stroke-width="1.5" stroke-linecap="round"/>
-        <!-- piernas -->
-        <line x1="74" y1="130" x2="70" y2="142" stroke="#4a8c3f" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="78" y1="130" x2="82" y2="142" stroke="#4a8c3f" stroke-width="1.5" stroke-linecap="round"/>
-        <!-- rosa a la derecha -->
-        <line x1="118" y1="108" x2="118" y2="148" stroke="#3aab75" stroke-width="1.5"/>
-        <ellipse cx="112" cy="106" rx="7" ry="5" fill="#ff6b9d" opacity=".9"/>
-        <ellipse cx="118" cy="103" rx="6" ry="4" fill="#ff8ab5" opacity=".8"/>
-        <ellipse cx="124" cy="107" rx="5" ry="4" fill="#ffaacb" opacity=".7"/>
-        <!-- título -->
-        <rect x="0" y="188" width="152" height="40" fill="#0a0e1c" opacity=".9"/>
-        <text x="76" y="204" font-family="Georgia,serif" font-size="10" font-weight="bold" fill="#ffc857" text-anchor="middle" letter-spacing="1">{{ libro.titulo }}</text>
-        <text x="76" y="218" font-family="Georgia,serif" font-size="7" fill="#8888aa" text-anchor="middle">{{ libro.autor|default:"Desconocido" }}</text>
-        <!-- spine color -->
-        <rect x="0" y="0" width="6" height="228" fill="#ffc857" opacity=".7"/>
-      </svg>
+      <div class="cover-3d">
+        <!-- Icono por defecto -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+      </div>
     </div>
 
     <div class="hero-meta">
-      <div class="book-genre-tag">✦ {{ libro.genero|default:"Sin género" }}</div>
-      <div class="book-title">{{ libro.titulo }}</div>
+      <!-- ✅ DATOS DINÁMICOS DEL LIBRO -->
+      <div class="book-genre-tag">✦ {{ libro.categoria.nombre|default:"Sin género" }}</div>
+      <h1 class="book-title">{{ libro.titulo }}</h1>
       <div class="book-subtitle">{{ libro.subtitulo|default:"" }}</div>
-      <div class="book-author">por <span>{{ libro.autor|default:"Autor desconocido" }}</span> · {{ libro.fecha_creacion.year }}</div>
+      <div class="book-author">
+        por 
+        <!-- ✅ ENLACE AL PERFIL DEL AUTOR -->
+        <a href="{% url 'blog:perfil_usuario' libro.usuario.id_usuario %}">
+          {{ libro.usuario.nombres|default:libro.usuario.nombre_usuario|default:"Autor desconocido" }}
+        </a> 
+        · {{ libro.fecha_creacion.year }}
+      </div>
+      
       <div class="star-row">
         <span class="stars">★★★★★</span>
-        <span class="rating-num">4.9</span>
-        <span class="rating-count">· 1.2M valoraciones</span>
+        <span class="rating-num">{{ valoracion_promedio|default:"4.8" }}</span>
+        <span class="rating-count">· {{ cantidad_votos|default:"1.2K" }} valoraciones</span>
       </div>
+      
       <div class="hero-actions">
         <button class="btn-read" onclick="goToReader()">▶ Leer ahora</button>
+        <!-- ✅ ENLACE DE DESCARGA DEL PDF -->
+        {% if libro.archivo_pdf %}
         <a href="{{ libro.archivo_pdf.url }}" class="btn-descargar" download>⬇ Descargar PDF</a>
+        {% endif %}
+        <button class="btn-save" id="saveBtn" onclick="toggleSave()">❤ Guardar</button>
       </div>
     </div>
   </div>
@@ -353,15 +329,17 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
 
 <!-- STATS BAR -->
 <div class="stats-bar">
-  <div class="stat-item"><div class="stat-val">{{ libro.capitulos|default:"?" }}</div><div class="stat-lbl">Capítulos</div></div>
+  <div class="stat-item"><div class="stat-val">{{ cantidad_paginas|default:"?" }}</div><div class="stat-lbl">Páginas</div></div>
   <div class="stat-item"><div class="stat-val">{{ libro.estado|default:"Publicado" }}</div><div class="stat-lbl">Estado</div></div>
-  <div class="stat-item"><div class="stat-val">{{ libro.fecha_creacion.year }}</div><div class="stat-lbl">Año</div></div>
+  <div class="stat-item"><div class="stat-val">{{ libro.fecha_creacion|date:"Y" }}</div><div class="stat-lbl">Año</div></div>
+  <div class="stat-item"><div class="stat-val">{{ total_lecturas|default:"0" }}</div><div class="stat-lbl">Lecturas</div></div>
 </div>
 
 <!-- TABS -->
 <div class="tabs-bar">
   <button class="tab active" onclick="switchTab(this,'tab-main')">Descripción</button>
   <button class="tab" onclick="switchTab(this,'tab-comments')">Comentarios</button>
+  <button class="tab" onclick="switchTab(this,'tab-content')">Contenido</button>
 </div>
 
 <!-- ══ PAGE CONTENT ══ -->
@@ -377,43 +355,58 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
       <div class="synopsis-card">
         <div class="sec-label">Sinopsis</div>
         <div class="synopsis-text">
-          <p>{{ libro.sinopsis|linebreaksbr }}</p>
+          {% if libro.sinopsis %}
+            {{ libro.sinopsis|linebreaksbr }}
+          {% else %}
+            <em style="color:var(--muted);">Este libro no tiene sinopsis disponible.</em>
+          {% endif %}
         </div>
       </div>
 
-      <!-- 2. LECTOR (EN EL CENTRO, entre sinopsis y detalles) -->
-      <div id="reader-area">
-        <div class="sec-label">Leer ahora</div>
-        <div class="reader-card" id="reader">
-            <div class="reader-card" id="reader">
-
-    <div class="reader-top-bar">
-        <span class="chapter-label">📖 {{ libro.titulo }}</span>
     </div>
 
-    <div class="pdf-container">
-        <iframe
-            id="pdfViewer"
-            src="{{ libro.archivo_pdf.url }}"
-            width="125%"
-            height="900px"
-            style="border:none;">
-        </iframe>
-    </div>
+    <!-- TAB: CONTENIDO / LECTOR PDF -->
+    <div id="tab-content" class="tab-content">
+      <div class="reader-card">
+        <div class="reader-top-bar">
+            <span class="chapter-label">📖 Leyendo: {{ libro.titulo }}</span>
+        </div>
 
-</div>
-         
+        <div class="pdf-container">
+          {% if libro.archivo_pdf %}
+            <iframe id="pdfViewer" src="{{ libro.archivo_pdf.url }}" width="100%" height="900px" style="border:none;"></iframe>
+          {% else %}
+            <div style="padding:40px;text-align:center;color:var(--muted);">
+              <p>El archivo PDF no está disponible actualmente.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
 
     <!-- TAB: COMENTARIOS -->
     <div id="tab-comments" class="tab-content">
       <div class="comments-card">
         <div class="sec-label" style="margin-bottom:18px;">Comentarios</div>
+        
+        {% if user.is_authenticated %}
         <div class="comment-input-row">
-          <div class="u-avatar" style="background:linear-gradient(135deg,#2d1b4e,#a78bf7);">TU</div>
+          <div class="u-avatar" style="background:linear-gradient(135deg,#2d1b4e,#a78bf7);">
+            {{ user.nombres|first|upper }}
+          </div>
           <textarea class="comment-box" id="newComment" placeholder="¿Qué te pareció este libro?"></textarea>
           <button class="c-submit" onclick="submitComment()">Publicar</button>
         </div>
-        <div id="commentList"></div>
+        {% else %}
+        <p style="color:var(--muted);text-align:center;padding:15px;">
+          <a href="{% url 'blog:login' %}" style="color:var(--accent);text-decoration:none;">Inicia sesión</a> para dejar un comentario.
+        </p>
+        {% endif %}
+
+        <div id="commentList">
+          <!-- Aquí irían los comentarios reales cuando los crees en el modelo -->
+          <p style="color:var(--muted);font-style:italic;">Aún no hay comentarios. ¡Sé el primero en opinar!</p>
+        </div>
       </div>
     </div>
 
@@ -424,48 +417,47 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
 
     <!-- AUTOR -->
     <div class="r-card">
-      <div class="auth-avatar">{{ libro.autor|first|upper }}</div>
-      <div class="auth-name">{{ libro.autor|default:"Desconocido" }}</div>
-      <div class="auth-dates">1900 – 1944 · Francia</div>
-      <div class="auth-bio">Escritor, poeta y aviador francés.</div>
+      <a href="{% url 'blog:perfil_usuario' libro.usuario.id_usuario %}" style="text-decoration:none;">
+        <div class="auth-avatar">{{ libro.usuario.nombres|first|upper }}</div>
+        <div class="auth-name">{{ libro.usuario.nombres }} {{ libro.usuario.apellidos }}</div>
+        <div class="auth-dates">@{{ libro.usuario.nombre_usuario }}</div>
+      </a>
+      <div class="auth-bio">{{ libro.usuario.biografia|default:"Este autor no ha escrito su biografía."|truncatechars:100 }}</div>
+      
       <div class="auth-stats">
-        <div><div class="as-num">8</div><div class="as-lbl">Obras</div></div>
-        <div><div class="as-num">200M</div><div class="as-lbl">Copias</div></div>
-        <div><div class="as-num">4.9★</div><div class="as-lbl">Media</div></div>
+        <div><div class="as-num">{{ libro.usuario.libro_set.count|default:0 }}</div><div class="as-lbl">Libros</div></div>
+        <div><div class="as-num">4.9★</div><div class="as-lbl">Valoración</div></div>
       </div>
+      
+      {% if user.id_usuario != libro.usuario.id_usuario and user.is_authenticated %}
       <button class="btn-follow" id="followBtn" onclick="toggleFollow()">+ Seguir autor</button>
+      {% endif %}
     </div>
 
     <!-- DETALLES -->
     <div class="r-card">
       <div class="r-card-title">Detalles del libro</div>
-      <div class="info-row"><div class="info-key">Título original</div><div class="info-val">{{ libro.titulo }}</div></div>
+      <div class="info-row"><div class="info-key">Título</div><div class="info-val">{{ libro.titulo }}</div></div>
       <div class="info-row"><div class="info-key">Publicación</div><div class="info-val">{{ libro.fecha_creacion|date:"d F, Y" }}</div></div>
       <div class="info-row"><div class="info-key">Estado</div><div class="info-val">{{ libro.estado }}</div></div>
-      <div class="info-row"><div class="info-key">Capítulos</div><div class="info-val">{{ libro.capitulos|default:"-" }}</div></div>
-      <div class="info-row"><div class="info-key">Idioma original</div><div class="info-val">{{ libro.idioma|default:"Español" }}</div></div>
-      <div class="info-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
-        <div class="info-key">Géneros</div>
-        <div class="genre-chips">
-          <div class="g-chip">{{ libro.genero|default:"Sin clasificar" }}</div>
-        </div>
-      </div>
+      <div class="info-row"><div class="info-key">Categoría</div><div class="info-val">{{ libro.categoria.nombre|default:"Sin categoría" }}</div></div>
+      <div class="info-row"><div class="info-key">ID Libro</div><div class="info-val">#{{ libro.id_libro }}</div></div>
     </div>
 
     <!-- LIBROS SIMILARES -->
     <div class="r-card">
       <div class="r-card-title">También te puede gustar</div>
       {% for libro_similar in libros_similares %}
-      <div class="sim-book" onclick="window.location.href='{% url 'blog:perfil_libro' libro_similar.id_libro %}'">
+      <a href="{% url 'blog:perfil_libro' libro_similar.id_libro %}" class="sim-book" style="text-decoration:none;">
         <div class="sim-cov">
           <svg viewBox="0 0 40 60"><rect width="40" height="60" fill="#1a0d14"/><circle cx="20" cy="22" r="12" fill="#c8940a" opacity=".5"/><circle cx="20" cy="22" r="7" fill="#ffc857" opacity=".7"/><rect x="4" y="48" width="32" height="4" rx="2" fill="#e8e8f0" opacity=".6"/></svg>
         </div>
         <div class="sim-i">
           <div class="sim-t">{{ libro_similar.titulo }}</div>
-          <div class="sim-a">{{ libro_similar.autor|default:"-" }}</div>
+          <div class="sim-a">@{{ libro_similar.usuario.nombre_usuario }}</div>
           <div class="sim-r">★★★★★ 4.7</div>
         </div>
-      </div>
+      </a>
       {% empty %}
       <p style="color:var(--muted); font-size:.8rem;">No hay recomendaciones por ahora.</p>
       {% endfor %}
@@ -486,93 +478,46 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
 </footer>
 
 <script>
-
-
-// Add remaining chapter stubs
-for(let i=7; i<=27; i++){
-  chapters.push({n:i, title:`Capítulo ${toRoman(i)}`, subtitle:chapterSubtitle(i), words:'~280 palabras', text:`[Contenido del Capítulo ${i}. Puedes reemplazar este texto con el contenido real del libro.]`});
+/* ── TABS ── */
+function switchTab(el,id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
-function toRoman(n){
-  const r=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI','XXII','XXIII','XXIV','XXV','XXVI','XXVII'];
-  return r[n-1]||n;
-}
-function chapterSubtitle(n){
-  const subs={7:'El rey y su planeta',8:'El vanidoso',9:'El bebedor',10:'El hombre de negocios',11:'El farolero',12:'El geógrafo',13:'La Tierra',14:'La flor del desierto',15:'El encuentro con la serpiente',16:'La montaña',17:'Las flores y los hombres',18:'El jardín de rosas',19:'El zorro',20:'Las agujas',21:'El guardagujas',22:'El mercader',23:'El pozo en el desierto',24:'El veneno',25:'El regreso',26:'La despedida',27:'Epilogo'};
-  return subs[n]||'';
+/* ── ACTIONS ── */
+let saved = false;
+function toggleSave(){
+  saved = !saved;
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = saved ? '❤ Guardado' : '❤ Guardar';
+  btn.classList.toggle('active', saved);
 }
 
-/* ── READER STATE ── */
-let currentChapter = 0;
-let fontSize = 16;
-let dayMode = false;
-let serifMode = false;
+let followed = false;
+function toggleFollow(){
+  followed = !followed;
+  const btn = document.getElementById('followBtn');
+  btn.textContent = followed ? '✓ Siguiendo' : '+ Seguir autor';
+  btn.style.background = followed ? 'var(--muted2)' : 'transparent';
+}
 
-function renderChapter(){
-  const ch = chapters[currentChapter];
-  const body = document.getElementById('readerBody');
-  const paras = ch.text.split('\n\n').filter(p=>p.trim());
-  body.innerHTML = paras.map(p=>`<p>${p.trim()}</p>`).join('');
-  document.getElementById('chapterTitle').textContent = ch.title;
-  const pct = Math.round(((currentChapter+1)/chapters.length)*100);
-  document.getElementById('progText').textContent = `Capítulo ${currentChapter+1} de ${chapters.length}`;
-  document.getElementById('progPct').textContent = pct+'%';
-  document.getElementById('progFill').style.width = pct+'%';
-  // update active in chapter list
-  document.querySelectorAll('.ch-item').forEach((el,i)=>{
-    el.classList.toggle('current', i===currentChapter);
-  });
-}
-function nextChapter(){ if(currentChapter<chapters.length-1){currentChapter++;renderChapter();document.getElementById('reader').scrollIntoView({behavior:'smooth',block:'start'});}}
-function prevChapter(){ if(currentChapter>0){currentChapter--;renderChapter();document.getElementById('reader').scrollIntoView({behavior:'smooth',block:'start'});}}
-function changeFont(d){ fontSize=Math.min(20,Math.max(13,fontSize+d)); document.getElementById('readerBody').style.fontSize=fontSize+'px';}
-function toggleDay(){
-  dayMode=!dayMode;
-  document.getElementById('readerBody').classList.toggle('day-mode',dayMode);
-  document.getElementById('dayBtn').textContent=dayMode?'☀':'☾';
-}
-function toggleSerif(){
-  serifMode=!serifMode;
-  document.getElementById('readerBody').style.fontFamily=serifMode?'Georgia,serif':"'DM Sans',sans-serif";
-  document.getElementById('serifBtn').classList.toggle('active',serifMode);
-}
 function goToReader(){
-  switchTab(document.querySelectorAll('.tab')[0],'tab-main');
-  setTimeout(()=>document.getElementById('reader').scrollIntoView({behavior:'smooth'}),90);
+  switchTab(document.querySelectorAll('.tab')[2],'tab-content');
+  setTimeout(() => {
+    document.getElementById('pdfViewer')?.scrollIntoView({behavior:'smooth'});
+  }, 100);
 }
-renderChapter();
 
-/* ── CHAPTER LIST ── */
-const cl = document.getElementById('chapterList');
-chapters.forEach((ch,i)=>{
-  const d=document.createElement('div');
-  d.className='ch-item'+(i===0?' current':'');
-  d.innerHTML=`<div class="ch-num">${toRoman(ch.n)}</div><div class="ch-info"><div class="ch-name">${ch.title}${ch.subtitle?` — ${ch.subtitle}`:''}</div><div class="ch-words">${ch.words}</div></div><span class="ch-badge ${i<6?'ch-free':'ch-lock'}">${i<6?'GRATIS':'🔒'}</span>`;
-  d.onclick=()=>{currentChapter=i;renderChapter();switchTab(document.querySelectorAll('.tab')[0],'tab-main');setTimeout(()=>document.getElementById('reader').scrollIntoView({behavior:'smooth'}),100);};
-  cl.appendChild(d);
-});
+function submitComment(){
+  const txt = document.getElementById('newComment').value.trim();
+  if(txt){
+    alert('Comentario enviado: ' + txt);
+    document.getElementById('newComment').value = '';
+  }
+}
+</script>
 
-/* ── COMMENTS ── */
-const commentsData=[
-  {user:"MariaL",init:"ML",color:"linear-gradient(135deg,#2a1a00,#ffc857)",time:"Hace 1 hora",badge:"CLÁSICO LOVER",text:"Este libro me cambió la vida cuando lo leí a los 12 años y cada vez que lo releo a los 34 sigue haciéndome llorar. 'Lo esencial es invisible a los ojos' es la frase más poderosa que se ha escrito.",likes:842,liked:false},
-  {user:"CarlosR",init:"CR",color:"linear-gradient(135deg,#0f3460,#7cc3ff)",time:"Hace 3 horas",badge:"",text:"La escena del zorro y la domesticación es filosofía pura. Saint-Exupéry escribió para adultos disfrazado de libro infantil. Maravilloso.",likes:512,liked:true},
-  {user:"SofiaV",init:"SV",color:"linear-gradient(135deg,#1a3d24,#3aab75)",time:"Hace 1 día",badge:"TOP LECTOR",text:"Lo leí primero en francés y luego en español. Hay algo en 'apprivoiser' (domesticar) que se pierde en la traducción pero que igual llega al corazón en cualquier idioma.",likes:389,liked:false},
-  {user:"JuanP",init:"JP",color:"linear-gradient(135deg,#3d1225,#ff8aa0)",time:"Hace 2 días",badge:"",text:"Los baobabs como metáfora de los malos hábitos que hay que arrancar antes de que crezcan... increíble que esto lo hayan escrito para niños. O quizás justamente por eso funciona.",likes:267,liked:false},
-];
-
-function renderComments(arr){
-  const cl2=document.getElementById('commentList');
-  cl2.innerHTML='';
-  arr.forEach((c,i)=>{
-    const d=document.createElement('div');d.className='comment';
-    d.innerHTML=`<div class="u-avatar" style="background:${c.color}">${c.init}</div>
-    <div class="c-body">
-      <div class="c-header">
-        <span class="c-user">${c.user}</span>
-        ${c.badge?`<span class="c-badge-tag">${c.badge}</span>`:''}
-        <span class="c-time">${c.time}</span>
-      </div>
-      <div class="c-text">${c.text}</div>
-      <div class="c-actions">
-        <button class="c-action ${c.liked?'liked':''}" onclick="toggleLike(${i},this)">♡ <span>${c.likes}</span></button>
-        <button class="c-action">↩
+</body>
+</html>

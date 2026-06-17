@@ -15,6 +15,7 @@
   --accent2:  #a8d84e;
   --text:     #e8e8f0;
   --muted:    #6b6b80;
+  --muted2:   #3a3a48;
 }
 
 * {
@@ -154,6 +155,16 @@ p {
   color: var(--muted2);
 }
 
+/* ✅ CLASE ESPECIAL PARA ASEGURAR QUE SEA CLICABLE */
+.enlace-invitado {
+  color: #888 !important;
+  text-decoration: underline !important;
+  cursor: pointer !important;
+  position: relative !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
 </style>
 </head>
 <body>
@@ -174,15 +185,16 @@ p {
     <h1>Tu espacio para <em>leer y escribir</em> sin límites</h1>
     <p>Únete a una comunidad donde las historias cobran vida. Descubre nuevos mundos o crea el tuyo propio.</p>
 
-    <!-- 👇 AQUÍ ESTÁN TUS BOTONES 👇 -->
+    <!-- 👇 BOTONES -->
     <div class="buttons-group">
-      <a href="{% url 'users:login' %}" class="btn btn-outline">Iniciar sesión</a>
-      <a href="{% url 'users:register' %}" class="btn btn-solid">Crear cuenta</a>
+      <a href="/accounts/login/" class="btn btn-outline">Iniciar sesión</a>
+      <a href="/accounts/register/" class="btn btn-solid">Crear cuenta</a>
     </div>
   </div>
 
+  {# ✅ ENLACE DE INVITADO - VERSIÓN DEFINITIVA Y SEGURA #}
   <div class="footer-note">
-    <a href="{% url 'blog:home' %}" style="color:var(--muted); text-decoration:none; font-size:0.8rem;">O entra como invitado →</a>
+    <a href="/home/" class="enlace-invitado">O entra como invitado →</a>
   </div>
 </div>
 
