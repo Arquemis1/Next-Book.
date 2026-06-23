@@ -234,14 +234,38 @@
         </form>
 
         <div class="links">
-            <p>¿Olvidaste tu contraseña? <a href="{% url 'users:password_reset' %}">Recuperar</a></p>
-            <p style="margin-top: 0.5rem;">¿No tienes cuenta? <a href="{% url 'users:register' %}">Crear cuenta</a></p>
+            <p>¿Olvidaste tu contraseña? <a href="{% url 'password_reset' %}">Recuperar</a></p>
+            <p>¿No tienes cuenta? <a href="{% url 'register' %}">Crear cuenta</a></p>
             <p style="margin-top: 1rem; font-size: 0.85rem; opacity: 0.7;">
                 <a href="{% url 'blog:welcome' %}">← Volver al inicio</a>
             </p>
         </div>
     </div>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const botonUsuario = document.getElementById("botonUsuario");
+  const menuPerfil = document.getElementById("menuPerfil");
+  const enlaceCerrar = document.getElementById("enlaceCerrar");
 
+  if (botonUsuario && menuPerfil) {
+    botonUsuario.addEventListener("click", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      menuPerfil.classList.toggle("mostrar");
+    });
+
+    if (enlaceCerrar) {
+      enlaceCerrar.addEventListener("click", function() {
+        localStorage.removeItem("usuarioActual");
+      });
+    }
+
+    document.addEventListener("click", function() {
+      menuPerfil.classList.remove("mostrar");
+    });
+  }
+});
+</script>
 </body>
 </html>

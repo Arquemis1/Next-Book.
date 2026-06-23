@@ -323,8 +323,7 @@ header {
 
 .section-title {
   font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 1.5rem;
+  font-weight: 700; font-size: 1.5rem;
   color: #fff;
   letter-spacing: -.02em;
 }
@@ -476,8 +475,7 @@ header {
 }
 
 .c-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
+  width: 5px; height: 5px; border-radius: 50%;
   background: var(--muted2);
   border: none;
   cursor: pointer;
@@ -530,7 +528,7 @@ header {
   background: var(--accent);
 }
 
-/* ── FOOTER ──────────────────────────────── */
+/* ── FOOTER ─────────────────────────── */
 footer {
   border-top: 1px solid var(--border);
   padding: 32px 5%;
@@ -593,11 +591,9 @@ footer {
   overflow: hidden;
   z-index: 300;
 }
-
-.user-menu:hover .user-dropdown {
-  display: flex;
+.user-dropdown.mostrar {
+  display: flex !important;
 }
-
 .user-dropdown a {
   color: var(--text);
   padding: 10px 14px;
@@ -638,35 +634,29 @@ footer {
     <a class="btn-ghost" href="{% url 'blog:subir_libro' %}">+ Subir Libro</a>
     
     <div class="user-menu">
-      <button class="user-btn">👤 
-        {% comment %} ✅ ARREGLADO: Lectura segura de datos, sin errores si faltan valores {% endcomment %}
+      <button class="user-btn" id="botonUsuario">👤 
+        {% comment %} ✅ CÓDIGO MEJORADO PARA MOSTRAR NOMBRE SIN ERRORES {% endcomment %}
         {% if perfil_real and perfil_real.username %}
-            {{ perfil_real.username }}
+            <span id="nombreUsuario">{{ perfil_real.username }}</span>
         {% elif usuario_real %}
-            {{ usuario_real.nombre }} {{ usuario_real.apellido }}
+            <span id="nombreUsuario">{{ usuario_real.nombre }} {{ usuario_real.apellido }}</span>
         {% else %}
-            {{ user.username|default:"Usuario" }}
+            <span id="nombreUsuario">{{ user.username|default:"Usuario" }}</span>
         {% endif %}
        ▾</button>
-      <div class="user-dropdown">
-        {# ✅ ARREGLADO: Enlaces seguros y compatibles con tus rutas #}
-        {% if usuario_real %}
-          <a href="{% url 'blog:perfil_usuario' usuario_real.pk %}">Mi Perfil</a>
-        {% else %}
-          <a href="/accounts/login/">Iniciar sesión</a>
-        {% endif %}
+      <div class="user-dropdown" id="menuPerfil">
+        <!-- ✅ ENLACE CORRECTO: Coincide con tu urls.py name='mi_perfil' -->
+        <a href="{% url 'blog:mi_perfil' %}">Mi Perfil</a>
         <a href="#">Mensajes</a>
         <a href="#">Mis Historias</a>
-        {% comment %} ✅ ARREGLADO: Verificación de administrador segura {% endcomment %}
         {% if es_administrador %}
         <a href="{% url 'blog:panel_admin' %}">⚙️ Panel de Administración</a>
         {% endif %}
-        <a href="/accounts/logout/">Cerrar sesión</a>
+        <a href="/accounts/logout/" id="enlaceCerrar">Cerrar sesión</a>
       </div>
     </div>
 
     {% else %}
-    {# ✅ ARREGLADO: VISTA PARA INVITADO / NO LOGEADO (SIN ERRORES DE RUTA) #}
     <a class="btn-ghost" href="/accounts/login/">Iniciar sesión</a>
     <a class="btn-solid" href="/accounts/register/">Registrarse</a>
     {% endif %}
@@ -779,9 +769,13 @@ footer {
             <div class="bcard-title">{{ libro.titulo }}</div>
             <!-- ✅ ENLACE AL PERFIL DEL AUTOR (CORREGIDO PARA TU ESTRUCTURA) -->
             {% for autor_link in libro.autorlibro_set.all %}
-              <a href="{% url 'blog:perfil_usuario' autor_link.usuario.id %}" class="bcard-author">
-                @{{ autor_link.usuario.perfil.username|default:"autor" }}
-              </a>
+              {% if autor_link.usuario and autor_link.usuario.perfil %}
+                <a href="{% url 'blog:perfil_usuario' autor_link.usuario.id %}" class="bcard-author">
+                  @{{ autor_link.usuario.perfil.username }}
+                </a>
+              {% else %}
+                <span class="bcard-author">@autor desconocido</span>
+              {% endif %}
             {% empty %}
               <span class="bcard-author">@autor desconocido</span>
             {% endfor %}
@@ -902,6 +896,34 @@ for(let i=0; i<Math.ceil(track.children.length / visibleCards); i++) {
 window.addEventListener('resize', updateVisibleCards);
 window.addEventListener('load', updateVisibleCards);
 
+
+// ✅ FUNCIONALIDAD DEL MENÚ DE USUARIO
+document.addEventListener("DOMContentLoaded", function() {
+  const botonUsuario = document.getElementById("botonUsuario");
+  const menuPerfil = document.getElementById("menuPerfil");
+  const enlaceCerrar = document.getElementById("enlaceCerrar");
+
+  if (botonUsuario && menuPerfil) {
+    // Abrir / Cerrar menú al hacer clic
+    botonUsuario.addEventListener("click", function(e) {
+      e.stopPropagation();
+      menuPerfil.classList.toggle("mostrar");
+    });
+
+    // Cerrar sesión: limpiar localStorage y redirigir
+    if (enlaceCerrar) {
+      enlaceCerrar.addEventListener("click", function() {
+        localStorage.removeItem("usuarioActual");
+      });
+    }
+
+    // Cerrar menú si se hace clic fuera
+    document.addEventListener("click", function() {
+      menuPerfil.classList.remove("mostrar");
+    });
+  }
+});
 </script>
+
 </body>
 </html>

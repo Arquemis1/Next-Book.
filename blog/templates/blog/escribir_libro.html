@@ -1,0 +1,849 @@
+{# blog/templates/blog/escribir_libro.html #}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NextStory — Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Literata:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg:       #0e0e10;
+  --surface:  #16161a;
+  --surface2: #1f1f25;
+  --border:   #2a2a32;
+  --accent:   #c8f06e;
+  --accent2:  #a8d84e;
+  --text:     #e8e8f0;
+  --muted:    #6b6b80;
+  --muted2:   #3a3a48;
+
+  /* la hoja de papel: el único lugar donde el tema se vuelve cálido */
+  --paper:       #f4efe2;
+  --paper-edge:  #e9e1cc;
+  --paper-text:  #2b2620;
+  --paper-muted: #948c76;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* ── NAVBAR ─────────────────────────────── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5%;
+  height: 68px;
+  position: sticky;
+  top: 0;
+  z-index: 300;
+  background: rgba(14,14,16,.9);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  gap: 24px;
+}
+
+.logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex-shrink:0; }
+.logo-mark { width:32px; height:32px; background:var(--accent); border-radius:8px; display:grid; place-items:center; }
+.logo-mark svg { width:16px; height:16px; }
+.logo-name { font-family:'Syne', sans-serif; font-weight:800; font-size:1.15rem; color:var(--text); letter-spacing:-.02em; }
+
+.back-link {
+  display: flex; align-items: center; gap: 6px;
+  color: var(--muted); text-decoration: none; font-size: .85rem; font-weight: 500;
+  padding-left: 18px; border-left: 1px solid var(--border);
+  transition: color .2s;
+}
+.back-link:hover { color: var(--text); }
+.back-link svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.header-center { flex:1; }
+
+.save-status {
+  display: flex; align-items: center; gap: 7px;
+  font-size: .8rem; color: var(--muted); white-space: nowrap;
+}
+.save-dot { width:6px; height:6px; border-radius:50%; background: var(--muted2); transition: background .2s; }
+.save-status.saving .save-dot { background: var(--accent); animation: pulse 1s infinite; }
+.save-status.saved .save-dot { background: var(--accent); }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+
+.nav-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+
+.btn-ghost {
+  background:none; border:1px solid var(--border); color:var(--text);
+  padding:8px 18px; border-radius:8px; font-family:'DM Sans',sans-serif;
+  font-size:.88rem; font-weight:500; cursor:pointer; transition: border-color .2s, color .2s;
+}
+.btn-ghost:hover { border-color: var(--muted); color:#fff; }
+
+.btn-solid {
+  background: var(--accent); border:none; color:#0e0e10;
+  padding:8px 20px; border-radius:8px; font-family:'DM Sans',sans-serif;
+  font-size:.88rem; font-weight:600; cursor:pointer; transition: background .2s;
+}
+.btn-solid:hover { background: var(--accent2); }
+.btn-solid:disabled { background: var(--muted2); color: var(--muted); cursor: not-allowed; }
+
+/* ── EDITOR SHELL ───────────────────────── */
+.editor-shell {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 32px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 36px 5% 80px;
+  align-items: start;
+}
+
+/* meta: titulo + genero */
+.meta-block { margin-bottom: 24px; }
+
+.title-input {
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  color: #fff;
+  letter-spacing: -.02em;
+  margin-bottom: 14px;
+}
+.title-input::placeholder { color: var(--muted2); }
+
+.meta-row { display:flex; align-items:center; gap: 14px; flex-wrap: wrap; }
+
+.chapter-input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .88rem;
+  font-weight: 500;
+  padding: 8px 14px;
+  outline: none;
+  min-width: 220px;
+  transition: border-color .2s;
+}
+.chapter-input:focus { border-color: var(--accent); }
+.chapter-input::placeholder { color: var(--muted); }
+
+.genre-select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  padding: 8px 12px;
+  outline: none;
+  cursor: pointer;
+}
+
+.status-pill {
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+/* ── TOOLBAR ────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center; gap: 4px;
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px;
+  position: sticky;
+  top: 84px;
+  z-index: 50;
+  margin-bottom: 22px;
+}
+
+.tb-group { display:flex; align-items:center; gap:3px; padding: 0 6px; }
+.tb-divider { width:1px; height:22px; background: var(--border); margin: 0 2px; flex-shrink:0; }
+
+.tb-btn {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  background: none; border: none; border-radius: 7px;
+  color: var(--text); cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background .15s, color .15s;
+}
+.tb-btn:hover { background: var(--surface2); }
+.tb-btn.active { background: rgba(200,240,110,.14); color: var(--accent); }
+.tb-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.tb-btn.glyph-b { font-weight: 700; font-size: .95rem; }
+.tb-btn.glyph-i { font-style: italic; font-weight: 600; font-size: .95rem; }
+.tb-btn.glyph-u { text-decoration: underline; font-weight: 600; font-size: .9rem; }
+.tb-btn.glyph-s { text-decoration: line-through; font-weight: 600; font-size: .9rem; }
+
+.tb-btn-text {
+  height: 34px; padding: 0 12px;
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: none; border-radius: 7px;
+  color: var(--text); cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .82rem; font-weight: 500;
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+}
+.tb-btn-text:hover { background: var(--surface2); }
+.tb-btn-text.active { background: rgba(200,240,110,.14); color: var(--accent); }
+
+.tb-select {
+  height: 34px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .8rem;
+  padding: 0 10px;
+  outline: none;
+  cursor: pointer;
+}
+.tb-select:hover { border-color: var(--muted); }
+
+/* ── THE PAGE ───────────────────────────── */
+.desk {
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255,255,255,.025) 0%, transparent 70%);
+  border-radius: 18px;
+  padding: 4px;
+}
+
+.manuscript-page {
+  background: var(--paper);
+  color: var(--paper-text);
+  border-radius: 14px;
+  padding: 72px 76px;
+  min-height: 640px;
+  box-shadow: 0 30px 70px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.04) inset;
+  font-family: 'Literata', serif;
+  font-size: 1.08rem;
+  line-height: 1.85;
+  outline: none;
+  position: relative;
+}
+
+.manuscript-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--paper-edge);
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+.manuscript-page:empty::before,
+.manuscript-page.is-empty::after {
+  content: attr(data-placeholder);
+  color: var(--paper-muted);
+  font-style: italic;
+  position: absolute;
+  top: 72px;
+  left: 76px;
+  pointer-events: none;
+}
+
+.manuscript-page::selection,
+.manuscript-page *::selection { background: rgba(168, 216, 78, .45); }
+
+.manuscript-page h1, .manuscript-page h2, .manuscript-page h3 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: #1d1812;
+  line-height: 1.25;
+  margin: .6em 0 .4em;
+}
+.manuscript-page h1 { font-size: 1.9rem; }
+.manuscript-page h2 { font-size: 1.5rem; }
+.manuscript-page h3 { font-size: 1.2rem; }
+.manuscript-page p { margin-bottom: .9em; }
+.manuscript-page blockquote {
+  border-left: 3px solid var(--accent2);
+  padding-left: 18px;
+  margin: 1em 0;
+  color: #4a4536;
+  font-style: italic;
+}
+.manuscript-page ul, .manuscript-page ol { padding-left: 28px; margin-bottom: .9em; }
+.manuscript-page a { color: #5c7a2e; text-decoration: underline; }
+
+/* footer bar bajo la hoja: conteo de palabras */
+.page-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding: 0 6px;
+  font-size: .78rem;
+  color: var(--muted);
+}
+.page-footer .counts { display:flex; gap: 18px; }
+
+/* ── ASIDE ──────────────────────────────── */
+.aside-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+.aside-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .82rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.chapter-list { display:flex; flex-direction:column; gap:6px; }
+
+.chapter-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.chapter-item:hover { background: var(--surface2); }
+.chapter-item.active { background: rgba(200,240,110,.08); border-color: rgba(200,240,110,.3); }
+
+.chapter-item-label { font-size: .85rem; color: var(--text); font-weight: 500; }
+.chapter-item.active .chapter-item-label { color: var(--accent); }
+.chapter-item-meta { font-size: .72rem; color: var(--muted); }
+
+.add-chapter-btn {
+  margin-top: 10px;
+  width: 100%;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: 9px;
+  color: var(--muted);
+  padding: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.add-chapter-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.field-label {
+  font-size: .78rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.field-textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  padding: 10px 12px;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.field-textarea:focus { border-color: var(--accent); }
+
+.stat-row { display:flex; justify-content:space-between; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: .85rem; }
+.stat-row:last-child { border-bottom: none; }
+.stat-row span:first-child { color: var(--muted); }
+.stat-row span:last-child { color: var(--text); font-weight: 600; }
+
+/* ── TOAST ──────────────────────────────── */
+.toast {
+  position: fixed; bottom: 32px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  padding: 14px 24px; border-radius: 12px; font-size: .88rem; font-weight: 500;
+  opacity: 0; transition: opacity .3s, transform .3s; z-index: 999;
+  white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,.4); pointer-events: none;
+}
+.toast.toast-show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ─────────────────────────── */
+@media (max-width: 980px) {
+  .editor-shell { grid-template-columns: 1fr; }
+  .header-center { display: none; }
+}
+@media (max-width: 600px) {
+  .manuscript-page { padding: 40px 26px; }
+  .title-input { font-size: 1.5rem; }
+  .toolbar { top: 0; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ──────────────────────────── -->
+<header>
+  <a class="logo" href="{% url 'blog:welcome' %}">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="5" height="12" rx="1.5" fill="#0e0e10"/>
+        <rect x="9" y="2" width="5" height="8" rx="1.5" fill="#0e0e10"/>
+      </svg>
+    </div>
+    <span class="logo-name">NextStory</span>
+  </a>
+  <a class="back-link" href="{% url 'blog:home' %}">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    Volver al inicio
+  </a>
+
+  <div class="header-center"></div>
+
+  <div class="save-status saved" id="saveStatus">
+    <span class="save-dot"></span>
+    <span id="saveStatusText">Guardado</span>
+  </div>
+
+  <div class="nav-actions">
+    <button class="btn-ghost" id="previewBtn">Vista previa</button>
+    <button class="btn-solid" id="publishBtn">Publicar</button>
+  </div>
+</header>
+
+<!-- ── FORMULARIO PARA GUARDAR EN LA BASE ──────────────────────────── -->
+<form method="POST" action="{% url 'blog:guardar_libro' %}" id="formPublicar">
+    {% csrf_token %}
+    <input type="hidden" name="titulo" id="inputTitulo">
+    <input type="hidden" name="sinopsis" id="inputSinopsis">
+    <input type="hidden" name="contenido" id="inputContenido">
+
+<!-- ── EDITOR ──────────────────────────── -->
+<div class="editor-shell">
+
+  <!-- MAIN: meta + toolbar + page -->
+  <div>
+    <div class="meta-block">
+      <input type="text" class="title-input" id="storyTitle" placeholder="Título de tu historia" maxlength="120">
+      <div class="meta-row">
+        <input type="text" class="chapter-input" id="chapterTitleInput" placeholder="Título del capítulo">
+        <select class="genre-select" id="genreSelect">
+          <option value="">Género</option>
+          <option value="romance">Romance</option>
+          <option value="fantasia">Fantasía</option>
+          <option value="drama">Drama</option>
+          <option value="misterio">Misterio</option>
+          <option value="aventura">Aventura</option>
+          <option value="ciencia_ficcion">Ciencia ficción</option>
+          <option value="terror">Terror</option>
+          <option value="thriller">Thriller</option>
+          <option value="poesia">Poesía</option>
+          <option value="historico">Histórico</option>
+        </select>
+        <span class="status-pill">Borrador</span>
+      </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar" id="toolbar">
+      <div class="tb-group">
+        <button class="tb-btn" data-cmd="undo" title="Deshacer">
+          <svg viewBox="0 0 24 24"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+        </button>
+        <button class="tb-btn" data-cmd="redo" title="Rehacer">
+          <svg viewBox="0 0 24 24"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+        </button>
+      </div>
+
+      <div class="tb-divider"></div>
+
+      <div class="tb-group">
+        <select class="tb-select" id="blockSelect" title="Estilo de párrafo">
+          <option value="P">Párrafo</option>
+          <option value="H1">Título 1</option>
+          <option value="H2">Título 2</option>
+          <option value="H3">Título 3</option>
+          <option value="BLOCKQUOTE">Cita</option>
+        </select>
+      </div>
+
+      <div class="tb-divider"></div>
+
+      <div class="tb-group">
+        <select class="tb-select" id="fontSelect" title="Fuente">
+          <option value="Literata">Literata</option>
+          <option value="'Playfair Display'">Playfair Display</option>
+          <option value="'Courier Prime'">Courier Prime</option>
+          <option value="'DM Sans'">DM Sans</option>
+        </select>
+        <select class="tb-select" id="sizeSelect" title="Tamaño de letra">
+          <option value="14">14</option>
+          <option value="16">16</option>
+          <option value="18" selected>18</option>
+          <option value="20">20</option>
+          <option value="24">24</option>
+          <option value="28">28</option>
+          <option value="32">32</option>
+        </select>
+      </div>
+
+      <div class="tb-divider"></div>
+
+      <div class="tb-group">
+        <button class="tb-btn glyph-b" data-cmd="bold" title="Negrita (Ctrl+B)">B</button>
+        <button class="tb-btn glyph-i" data-cmd="italic" title="Cursiva (Ctrl+I)">I</button>
+        <button class="tb-btn glyph-u" data-cmd="underline" title="Subrayado (Ctrl+U)">U</button>
+        <button class="tb-btn glyph-s" data-cmd="strikeThrough" title="Tachado">S</button>
+      </div>
+
+      <div class="tb-divider"></div>
+
+      <div class="tb-group">
+        <button class="tb-btn" data-cmd="justifyLeft" title="Alinear a la izquierda">
+          <svg viewBox="0 0 24 24"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="17" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+        </button>
+        <button class="tb-btn" data-cmd="justifyCenter" title="Centrar">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="14" x2="6" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+        </button>
+        <button class="tb-btn" data-cmd="justifyRight" title="Alinear a la derecha">
+          <svg viewBox="0 0 24 24"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="7" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+        </button>
+        <button class="tb-btn" data-cmd="justifyFull" title="Justificar">
+          <svg viewBox="0 0 24 24"><line x1="21" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="tb-divider"></div>
+
+      <div class="tb-group">
+        <button class="tb-btn-text" data-cmd="insertUnorderedList" title="Lista con viñetas">• Lista</button>
+        <button class="tb-btn-text" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
+      </div>
+
+      <div class="tb-divider"></div>
+
+      <div class="tb-group">
+        <button class="tb-btn-text" id="linkBtn" title="Insertar enlace">Enlace</button>
+        <button class="tb-btn-text" id="clearFormatBtn" title="Borrar formato">Borrar formato</button>
+      </div>
+    </div>
+
+    <!-- THE PAGE -->
+    <div class="desk">
+      <div class="manuscript-page"
+           id="editor"
+           contenteditable="true"
+           data-placeholder="Había una vez..."
+           spellcheck="true"></div>
+    </div>
+
+    <div class="page-footer">
+      <div class="counts">
+        <span id="wordCount">0 palabras</span>
+        <span id="charCount">0 caracteres</span>
+      </div>
+      <span id="readTime">~0 min de lectura</span>
+    </div>
+  </div>
+
+  <!-- ASIDE -->
+  <aside>
+    <div class="aside-card">
+      <div class="aside-title">Capítulos</div>
+      <div class="chapter-list" id="chapterList"></div>
+      <button class="add-chapter-btn" id="addChapterBtn">+ Añadir capítulo</button>
+    </div>
+
+    <div class="aside-card">
+      <div class="aside-title">Sinopsis</div>
+      <label class="field-label" for="synopsis">Resumen breve para los lectores</label>
+      <textarea class="field-textarea" id="synopsis" placeholder="En unas pocas líneas, ¿de qué trata tu historia?"></textarea>
+    </div>
+
+    <div class="aside-card">
+      <div class="aside-title">Esta historia</div>
+      <div class="stat-row"><span>Capítulos</span><span id="statChapters">1</span></div>
+      <div class="stat-row"><span>Palabras totales</span><span id="statTotalWords">0</span></div>
+      <div class="stat-row"><span>Última edición</span><span id="statLastEdit">ahora</span></div>
+    </div>
+  </aside>
+
+</div>
+</form>
+
+<script>
+/* ───────────────────────────────────────────
+   Estado de la historia (en memoria, sin servidor)
+   ─────────────────────────────────────────── */
+let chapters = [
+  { id: 1, title: 'Capítulo 1', html: '' }
+];
+let currentChapterId = 1;
+let chapterCounter = 1;
+
+const editor = document.getElementById('editor');
+const chapterTitleInput = document.getElementById('chapterTitleInput');
+const chapterListEl = document.getElementById('chapterList');
+
+/* ── Construir / refrescar lista de capítulos ── */
+function renderChapterList() {
+  chapterListEl.innerHTML = '';
+  chapters.forEach(ch => {
+    const item = document.createElement('div');
+    item.className = 'chapter-item' + (ch.id === currentChapterId ? ' active' : '');
+    const words = plainTextWordCount(ch.html);
+    item.innerHTML = `
+      <span class="chapter-item-label">${escapeHtml(ch.title)}</span>
+      <span class="chapter-item-meta">${words} palabras</span>`;
+    item.addEventListener('click', () => switchChapter(ch.id));
+    chapterListEl.appendChild(item);
+  });
+  document.getElementById('statChapters').textContent = chapters.length;
+  const total = chapters.reduce((sum, c) => sum + plainTextWordCount(c.html), 0);
+  document.getElementById('statTotalWords').textContent = total;
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function plainTextWordCount(html) {
+  const d = document.createElement('div');
+  d.innerHTML = html || '';
+  const text = (d.textContent || '').trim();
+  return text ? text.split(/\s+/).length : 0;
+}
+
+function getCurrentChapter() {
+  return chapters.find(c => c.id === currentChapterId);
+}
+
+function switchChapter(id) {
+  // guarda el capítulo actual antes de cambiar
+  const cur = getCurrentChapter();
+  if (cur) cur.html = editor.innerHTML;
+
+  currentChapterId = id;
+  const next = getCurrentChapter();
+  editor.innerHTML = next.html || '';
+  chapterTitleInput.value = next.title;
+  toggleEmptyState();
+  updateCounts();
+  renderChapterList();
+}
+
+document.getElementById('addChapterBtn').addEventListener('click', () => {
+  const cur = getCurrentChapter();
+  if (cur) cur.html = editor.innerHTML;
+
+  chapterCounter++;
+  const newChapter = { id: Date.now(), title: 'Capítulo ' + chapterCounter, html: '' };
+  chapters.push(newChapter);
+  switchChapter(newChapter.id);
+  markSaving();
+});
+
+chapterTitleInput.addEventListener('input', () => {
+  const cur = getCurrentChapter();
+  if (cur) cur.title = chapterTitleInput.value || cur.title;
+  renderChapterList();
+  markSaving();
+});
+
+/* ───────────────────────────────────────────
+   Barra de herramientas
+   ─────────────────────────────────────────── */
+document.querySelectorAll('.tb-btn[data-cmd], .tb-btn-text[data-cmd]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    editor.focus();
+    document.execCommand(btn.dataset.cmd, false, null);
+    updateToolbarState();
+    markSaving();
+  });
+});
+
+document.getElementById('blockSelect').addEventListener('change', (e) => {
+  editor.focus();
+  document.execCommand('formatBlock', false, e.target.value);
+  markSaving();
+});
+
+document.getElementById('fontSelect').addEventListener('change', (e) => {
+  editor.focus();
+  document.execCommand('fontName', false, e.target.value);
+  markSaving();
+});
+
+/* Truco clásico para tamaños de fuente personalizados con execCommand:
+   se aplica un tamaño "legacy" y luego se reemplaza por un span con px reales. */
+document.getElementById('sizeSelect').addEventListener('change', (e) => {
+  editor.focus();
+  document.execCommand('fontSize', false, '7');
+  editor.querySelectorAll('font[size="7"]').forEach(el => {
+    el.removeAttribute('size');
+    el.style.fontSize = e.target.value + 'px';
+  });
+  markSaving();
+});
+
+document.getElementById('linkBtn').addEventListener('click', () => {
+  const url = prompt('Pega la URL del enlace:');
+  if (url) {
+    editor.focus();
+    document.execCommand('createLink', false, url);
+  }
+  markSaving();
+});
+
+document.getElementById('clearFormatBtn').addEventListener('click', () => {
+  editor.focus();
+  document.execCommand('removeFormat', false, null);
+  document.execCommand('formatBlock', false, 'P');
+  markSaving();
+});
+
+/* Reflejar el estado actual de la selección en los botones */
+function updateToolbarState() {
+  const map = {
+    bold: 'bold', italic: 'italic', underline: 'underline', strikeThrough: 'strikeThrough',
+    justifyLeft: 'justifyLeft', justifyCenter: 'justifyCenter', justifyRight: 'justifyRight', justifyFull: 'justifyFull',
+    insertUnorderedList: 'insertUnorderedList', insertOrderedList: 'insertOrderedList'
+  };
+  document.querySelectorAll('[data-cmd]').forEach(btn => {
+    const cmd = btn.dataset.cmd;
+    if (map[cmd]) {
+      try { btn.classList.toggle('active', document.queryCommandState(cmd)); }
+      catch (e) { /* algunos comandos no soportan queryCommandState fuera de foco */ }
+    }
+  });
+  try {
+    const block = (document.queryCommandValue('formatBlock') || '').toUpperCase();
+    const select = document.getElementById('blockSelect');
+    if (['P','H1','H2','H3','BLOCKQUOTE'].includes(block)) select.value = block;
+  } catch (e) {}
+}
+
+document.addEventListener('selectionchange', () => {
+  if (document.activeElement === editor) updateToolbarState();
+});
+
+/* ───────────────────────────────────────────
+   Conteo de palabras / tiempo de lectura
+   ─────────────────────────────────────────── */
+function updateCounts() {
+  const text = (editor.textContent || '').trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  const chars = text.length;
+  document.getElementById('wordCount').textContent = words + (words === 1 ? ' palabra' : ' palabras');
+  document.getElementById('charCount').textContent = chars + ' caracteres';
+  document.getElementById('readTime').textContent = '~' + Math.max(1, Math.round(words / 200)) + ' min de lectura';
+}
+
+function toggleEmptyState() {
+  const isEmpty = editor.innerHTML.trim() === '' || editor.innerHTML.trim() === '<br>';
+  editor.classList.toggle('is-empty', isEmpty);
+}
+
+/* ───────────────────────────────────────────
+   Autoguardado simulado (sin backend todavía)
+   ─────────────────────────────────────────── */
+let saveTimer = null;
+function markSaving() {
+  const statusEl = document.getElementById('saveStatus');
+  const textEl = document.getElementById('saveStatusText');
+  statusEl.classList.remove('saved');
+  statusEl.classList.add('saving');
+  textEl.textContent = 'Guardando...';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    getCurrentChapter().html = editor.innerHTML;
+    statusEl.classList.remove('saving');
+    statusEl.classList.add('saved');
+    textEl.textContent = 'Guardado · hace un momento';
+    document.getElementById('statLastEdit').textContent = 'hace un momento';
+    renderChapterList();
+  }, 900);
+}
+
+editor.addEventListener('input', () => {
+  toggleEmptyState();
+  updateCounts();
+  markSaving();
+});
+
+document.getElementById('storyTitle').addEventListener('input', markSaving);
+document.getElementById('genreSelect').addEventListener('change', markSaving);
+document.getElementById('synopsis').addEventListener('input', markSaving);
+
+/* ───────────────────────────────────────────
+   Botones de cabecera
+   ─────────────────────────────────────────── */
+document.getElementById('publishBtn').addEventListener('click', () => {
+  const title = document.getElementById('storyTitle').value.trim();
+  if (!title) {
+    showToast('Dale un título a tu historia antes de publicar.');
+    document.getElementById('storyTitle').focus();
+    return;
+  }
+
+  // ✅ PASAMOS LOS DATOS AL FORMULARIO OCULTO PARA ENVIAR A DJANGO
+  document.getElementById('inputTitulo').value = document.getElementById('storyTitle').value;
+  document.getElementById('inputSinopsis').value = document.getElementById('synopsis').value;
+  document.getElementById('inputContenido').value = editor.innerHTML;
+
+  // Enviamos el formulario
+  document.getElementById('formPublicar').submit();
+});
+
+document.getElementById('previewBtn').addEventListener('click', () => {
+  showToast('Vista previa: así verán los lectores este capítulo.');
+});
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('toast-show'));
+  setTimeout(() => { t.classList.remove('toast-show'); setTimeout(() => t.remove(), 400); }, 3000);
+}
+
+/* ── Inicialización ── */
+chapterTitleInput.value = getCurrentChapter().title;
+toggleEmptyState();
+updateCounts();
+renderChapterList();
+</script>
+</body>
+</html>

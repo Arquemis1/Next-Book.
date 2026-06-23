@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import Post # Importa tu modelo Post
 
-admin.site.register(Post) # Registra tu modelo en el panel de administración
-# Register your models here.
+# Aquí puedes registrar tus modelos si quieres verlos en el panel de administración,
+# pero por ahora lo dejamos limpio para que no dé error.

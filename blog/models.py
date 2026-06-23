@@ -1,18 +1,9 @@
 from django.db import models
-from django.utils import timezone # Importamos timezone para la fecha
-
-class Post(models.Model):
-    title = models.CharField(max_length=200) # Un campo de texto corto para el título
-    content = models.TextField() # Un campo de texto largo para el contenido
-    published_date = models.DateTimeField(default=timezone.now) # Fecha de publicación automática
-
-    def __str__(self):
-        return self.title # Muestra el título del post en el panel de administración
-# Create your models here.
-from django.db import models
+from django.utils import timezone
 
 
 class Registro(models.Model):
+    id = models.BigAutoField(primary_key=True)
     email = models.CharField(unique=True, max_length=150)
     telefono = models.CharField(max_length=20, blank=True, null=True)
     contrasena = models.CharField(max_length=255)
@@ -23,8 +14,10 @@ class Registro(models.Model):
 
 
 class Usuario(models.Model):
+    id = models.BigAutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=20, blank=True, null=True) # <-- Agregado porque lo usas en views
     direccion = models.CharField(max_length=255, blank=True, null=True)
     estado = models.CharField(max_length=50, blank=True, null=True)
     registro = models.OneToOneField(Registro, models.DO_NOTHING, blank=True, null=True)
@@ -42,9 +35,10 @@ class Administradores(models.Model):
 
 
 class Amistad(models.Model):
+    id = models.BigAutoField(primary_key=True)
     estado = models.CharField(max_length=50, blank=True, null=True)
-    usuario1 = models.ForeignKey(Usuario, models.DO_NOTHING, blank=True, null=True)
-    usuario2 = models.ForeignKey(Usuario, models.DO_NOTHING, related_name='amistad_usuario2_set', blank=True, null=True)
+    usuario1 = models.ForeignKey(Usuario, models.DO_NOTHING, blank=True, null=True, related_name='amistades_enviadas')
+    usuario2 = models.ForeignKey(Usuario, models.DO_NOTHING, related_name='amistades_recibidas', blank=True, null=True)
 
     class Meta:
         db_table = 'amistad'
@@ -56,13 +50,14 @@ class Libro(models.Model):
     sinopsis = models.TextField(blank=True, null=True)
     fecha_creacion = models.DateTimeField(blank=True, null=True)
     estado = models.CharField(max_length=50, blank=True, null=True)
-    archivo_pdf = models.CharField(max_length=255, blank=True, null=True)
+    archivo_pdf = models.TextField(blank=True, null=True)  # <-- Cambiado a TextField para aguantar el texto largo del editor
 
     class Meta:
         db_table = 'libro'
 
 
 class AutorLibro(models.Model):
+    id = models.BigAutoField(primary_key=True)
     rol = models.CharField(max_length=100, blank=True, null=True)
     usuario = models.ForeignKey(Usuario, models.DO_NOTHING, blank=True, null=True)
     libro = models.ForeignKey(Libro, models.DO_NOTHING, blank=True, null=True)
@@ -91,6 +86,7 @@ class Chat(models.Model):
 
 
 class ChatUsuario(models.Model):
+    id = models.BigAutoField(primary_key=True)
     chat = models.ForeignKey(Chat, models.DO_NOTHING, blank=True, null=True)
     usuario = models.ForeignKey(Usuario, models.DO_NOTHING, blank=True, null=True)
 
@@ -156,6 +152,7 @@ class Notificacion(models.Model):
 
 
 class Perfil(models.Model):
+    id = models.BigAutoField(primary_key=True)
     username = models.CharField(unique=True, max_length=100, blank=True, null=True)
     descripcion = models.TextField(blank=True, null=True)
     foto = models.CharField(max_length=255, blank=True, null=True)

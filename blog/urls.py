@@ -1,28 +1,35 @@
 from django.urls import path
 from .views import (
-    welcome_view, 
-    home_page, 
-    subir_libro,
+    welcome_view,
+    home_page,
+    subir_libro,       # ✅ CORRECTO: Así se llama en tu views.py
+    guardar_libro,
     perfil_libro,
     perfil_usuario,
-    panel_administrador
+    panel_administrador,
+    registro
 )
 
+# Nombre de la aplicación para usar 'blog:nombre_ruta' en las plantillas
 app_name = 'blog'
 
 urlpatterns = [
-    # 🏠 Rutas principales
-    path('', welcome_view, name='welcome'),          # Página de bienvenida
-    path('home/', home_page, name='home'),           # ✅ Coincide con el enlace de invitado
-    path('subir-libro/', subir_libro, name='subir_libro'), # ✅ Coincide con el botón del navbar
+    # Páginas principales
+    path('', welcome_view, name='welcome'),
+    path('inicio/', home_page, name='home'),
+    
+    # Libros
+    path('subir-libro/', subir_libro, name='subir_libro'),  # ✅ Ruta corregida
+    path('guardar-libro/', guardar_libro, name='guardar_libro'),
+    path('libro/<int:libro_id>/', perfil_libro, name='perfil_libro'),
 
-    # 📚 Rutas de Libros
-    path('libro/<int:libro_id>/', perfil_libro, name='perfil_libro'), # ✅ Coincide con tarjetas de libros
+    # Perfiles
+    path('perfil/', perfil_usuario, name='mi_perfil'),
+    path('perfil/<int:usuario_id>/', perfil_usuario, name='perfil_usuario'),
 
-    # 👤 Rutas de Perfiles de Usuario
-    path('usuario/', perfil_usuario, name='mi_perfil'),                # Mi perfil (el propio usuario)
-    path('usuario/<int:usuario_id>/', perfil_usuario, name='perfil_usuario'), # Ver perfil de OTRO usuario
+    # Administración
+    path('admin-panel/', panel_administrador, name='panel_admin'),
 
-    # ⚙️ Ruta de Administrador
-    path('administrador/', panel_administrador, name='panel_admin'), # ✅ Coincide con el menú de admin
+    # Autenticación / Registro
+    path('registro/', registro, name='registro'),
 ]

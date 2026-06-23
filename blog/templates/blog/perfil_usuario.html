@@ -1,256 +1,597 @@
+{# blog/templates/blog/perfil_usuario.html #}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Perfil: {{ usuario.nombre }} {{ usuario.apellido }} — NextStory</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NextStory — Perfil de {{ perfil.username|default:user.username }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
 <style>
 :root {
-  --bg:#0e0e10; --surface:#16161a; --surface2:#1f1f25;
-  --border:#2a2a32; --accent:#c8f06e; --accent2:#a8d84e;
-  --text:#e8e8f0; --muted:#6b6b80; --muted2:#3a3a48;
+  --bg: #0e0e10;
+  --surface: #16161a;
+  --surface2: #1f1f25;
+  --border: #2a2a32;
+  --accent: #c8f06e;
+  --accent2: #a8d84e;
+  --text: #e8e8f0;
+  --muted: #6b6b80;
+  --muted2: #3a3a48;
 }
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:400;overflow-x:hidden;line-height:1.6;}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box;}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 5%; height: 68px;
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(14,14,16,.82);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+}
+.logo {
+  display: flex; align-items: center; gap:10px;
+  text-decoration: none;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+.logo-mark {
+  width: 32px; height: 32px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: grid; place-items: center;
+}
+.logo-mark svg { width: 16px; height: 16px; }
+.nav-center { flex: 1; max-width: 400px; margin: 0 40px; }
+.search-wrap { position: relative; }
+.search-wrap svg {
+  position: absolute; left:14px; top:50%;
+  transform: translateY(-50%);
+  width:16px; height:16px;
+  stroke: var(--muted);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.search {
+  width: 100%; height: 40px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding-left: 40px; padding-right:16px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  outline: none;
+  transition: border-color .2s;
+}
+.search::placeholder { color: var(--muted); }
+.search:focus { border-color: var(--accent); }
+.nav-actions {
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 2px solid var(--accent);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.nav-avatar svg { width: 100%; height: 100%; }
 
-/* NAVBAR */
-header{display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:68px;position:sticky;top:0;z-index:200;background:rgba(14,14,16,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
-.logo-mark{width:32px;height:32px;background:var(--accent);border-radius:8px;display:grid;place-items:center;}
-.logo-mark svg{width:16px;height:16px;}
-.logo-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;color:var(--text);letter-spacing:-.02em;}
-.nav-back{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.85rem;text-decoration:none;transition:color .2s;}
-.nav-back:hover{color:var(--accent);}
-.nav-actions{display:flex;align-items:center;gap:10px;}
-.btn-ghost{background:none;border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;transition:border-color .2s,color .2s;text-decoration:none;}
-.btn-ghost:hover{border-color:var(--muted);color:#fff;}
-.btn-solid{background:var(--accent);border:none;color:#0e0e10;padding:8px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:background .2s;text-decoration:none;}
-.btn-solid:hover{background:var(--accent2);}
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 5% 80px;
+}
 
-/* PROFILE HEADER */
-.profile-hero{background:linear-gradient(180deg,var(--surface) 0%,var(--bg) 100%);border-bottom:1px solid var(--border);padding:40px 5%;position:relative;overflow:hidden;}
-.profile-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:120px;background:linear-gradient(180deg,var(--accent) 0%,transparent 100%);opacity:.08;}
-.profile-container{max-width:1100px;margin:0 auto;display:flex;align-items:flex-start;gap:32px;position:relative;z-index:2;}
-.profile-avatar-wrap{position:relative;}
-.profile-avatar{width:140px;height:140px;border-radius:50%;background:linear-gradient(135deg,#2a1a00,#ffc857);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:3.2rem;color:#0e0e10;box-shadow:0 8px 32px rgba(0,0,0,.3);border:4px solid var(--surface);}
-.profile-badges{position:absolute;bottom:8px;right:8px;background:var(--accent);color:#0e0e10;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-weight:bold;font-size:.8rem;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+.profile-banner {
+  position: relative;
+  height: 180px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--surface2);
+  margin-bottom: 0;
+}
+.banner-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 80% at 20% 50%, rgba(200,240,110,.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 80% at 80% 30%, rgba(167,139,247,.10) 0%, transparent 60%),
+    linear-gradient(135deg, #1a1a2e 0%, #16161a 50%, #1f1525 100%);
+}
+.banner-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(200,240,110,.15) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: .5;
+}
+.banner-edit {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: rgba(14,14,16,.65);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+  display: flex; align-items: center; gap: 6px;
+  user-select: none;
+}
+.banner-edit:hover { border-color: var(--accent); color: var(--accent); }
+.banner-edit svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
 
-.profile-main{flex:1;}
-.profile-top-row{display:flex;align-items:center;gap:16px;margin-bottom:8px;flex-wrap:wrap;}
-.profile-name{font-family:'Syne',sans-serif;font-weight:800;font-size:2.2rem;color:#fff;letter-spacing:-.02em;}
-.profile-handle{font-size:.95rem;color:var(--muted);}
-.profile-actions{margin-left:auto;display:flex;gap:10px;}
-.btn-follow{background:var(--accent);color:#0e0e10;border:none;padding:9px 22px;border-radius:8px;font-weight:600;cursor:pointer;transition:background .2s;}
-.btn-follow:hover{background:var(--accent2);}
-.btn-message{background:none;border:1px solid var(--border);color:var(--text);padding:9px 18px;border-radius:8px;cursor:pointer;transition:border-color .2s;}
-.btn-message:hover{border-color:var(--accent);color:var(--accent);}
+.profile-identity {
+  display: flex; align-items: flex-start; gap: 24px;
+  padding: 0 28px;
+  margin-top: -52px;
+  margin-bottom: 28px;
+  position: relative;
+  z-index: 2;
+}
+.avatar-wrap {
+  position: relative; flex-shrink: 0;
+}
+.avatar {
+  width: 100px; height: 100px; border-radius: 50%;
+  background: var(--surface2);
+  border: 4px solid var(--bg);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+}
+.avatar img, .avatar svg { width: 100%; height: 100%; display: block; object-fit: cover; }
+.avatar-badge {
+  position: absolute; bottom: 4px; right: 4px;
+  width: 20px; height: 20px; background: var(--accent);
+  border-radius: 50%; border: 3px solid var(--bg);
+  display: grid; place-items: center;
+}
+.avatar-badge svg { width: 10px; height: 10px; fill: #0e0e10; }
 
-.profile-meta{display:flex;gap:24px;margin:12px 0;flex-wrap:wrap;}
-.meta-item{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--muted);}
-.meta-item svg{width:14px;height:14px;opacity:.7;}
+.profile-info {
+  flex:1;
+  padding-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+}
+.profile-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.55rem;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+.profile-handle {
+  font-size: .85rem;
+  color: var(--muted);
+  font-weight: 400;
+  margin-bottom: 12px;
+}
+.profile-extra {
+  font-size: .85rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.profile-extra span {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-weight: 300;
+}
+.profile-extra svg {
+  width: 14px; height: 14px;
+  fill: var(--muted);
+}
 
-.profile-bio{font-size:.95rem;line-height:1.7;color:#b8b8cc;max-width:700px;margin-top:10px;}
+.profile-actions {
+  margin-top: auto;
+}
+.btn-edit-profile {
+  background: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+  user-select: none;
+}
+.btn-edit-profile:hover {
+  background: var(--accent);
+  color: #0e0e10;
+}
 
-/* STATS ROW */
-.profile-stats{display:flex;gap:40px;margin-top:20px;}
-.pstat{text-align:center;}
-.pstat-val{font-family:'Syne',sans-serif;font-weight:700;font-size:1.4rem;color:#fff;}
-.pstat-lbl{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+.profile-body {
+  padding: 0 28px;
+}
 
-/* CONTENT WRAP */
-.content-wrap{max-width:1100px;margin:0 auto;padding:30px 5%;}
+.profile-bio {
+  font-size: .93rem;
+  color: var(--muted);
+  font-weight: 300;
+  max-width: 540px;
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+.profile-bio strong {
+  color: var(--text);
+  font-weight: 500;
+}
 
-/* TABS */
-.tabs-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:30px;}
-.tab{padding:12px 24px;font-size:.9rem;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s;background:none;border:none;font-family:'DM Sans',sans-serif;}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
-.tab:hover{color:var(--text);}
+.profile-tags {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px;
+}
+.profile-tag {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 4px 12px;
+  font-size: .75rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: .03em;
+}
+.profile-tag.accent {
+  border-color: rgba(200,240,110,.3);
+  color: var(--accent);
+  background: rgba(200,240,110,.06);
+}
 
-/* GRID DE LIBROS */
-.stories-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:24px;}
-.bcard{cursor:pointer;transition:transform .2s;}
-.bcard:hover{transform:translateY(-4px);}
-.bcard-cover{width:100%;aspect-ratio:2/3;border-radius:8px;overflow:hidden;position:relative;box-shadow:0 4px 12px rgba(0,0,0,.2);margin-bottom:10px;}
-.bcard-cover svg{width:100%;height:100%;display:block;}
-.bcard-cover-overlay{position:absolute;inset:0;background:rgba(0,0,0,.3);opacity:0;transition:opacity .2s;}
-.bcard:hover .bcard-cover-overlay{opacity:1;}
-.bcard-info{}
-.bcard-title{font-weight:600;font-size:.85rem;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.bcard-meta{display:flex;justify-content:space-between;align-items:center;}
-.bcard-rating{color:#ffc857;font-size:.75rem;}
-.bcard-reads{font-size:.7rem;color:var(--muted);}
+.profile-tabs {
+  display: flex; gap:0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+.tab-btn {
+  background:none;
+  border:none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .88rem;
+  font-weight: 500;
+  padding: 12px 22px;
+  cursor: pointer;
+  transition: color .2s, border-color .2s;
+  margin-bottom: -1px;
+  display: flex;
+  align-items:center;
+  gap:7px;
+}
+.tab-btn:hover {
+  color: var(--text);
+}
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tab-count {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 1px 7px;
+  font-size: .7rem;
+  color: var(--muted);
+}
+.tab-btn.active .tab-count {
+  background: rgba(200,240,110,.1);
+  border-color: rgba(200,240,110,.25);
+  color: var(--accent);
+}
 
-/* SECCIÓN */
-.sec-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:20px;color:#fff;}
+.tab-panel {
+  display: none;
+}
+.tab-panel.active {
+  display: block;
+}
+.stories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(160px,1fr));
+  gap: 20px;
+}
+.bcard {
+  cursor: pointer;
+  transition: transform .22s ease;
+  text-decoration: none;
+  color: inherit;
+}
+.bcard:hover {
+  transform: translateY(-4px);
+}
+.bcard-cover {
+  width: 100%;
+  aspect-ratio: 2/3;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  background: var(--surface2);
+}
+.bcard-cover svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.bcard-cover-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.65) 0%, transparent 50%);
+  border-radius: 10px;
+}
+.bcard-badge {
+  position: absolute;
+  top: 10px; left: 10px;
+  background: rgba(14,14,16,.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.bcard-info {
+  padding: 12px 2px 0;
+}
+.bcard-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .9rem;
+  color: var(--text);
+  line-height: 1.25;
+  margin-bottom: 3px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bcard-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.bcard-rating {
+  font-size: .75rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+.bcard-reads {
+  font-size: .72rem;
+  color: var(--muted);
+}
 
-/* FOOTER */
-footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-content:space-between;align-items:center;margin-top:40px;}
-.footer-copy{font-size:.8rem;color:var(--muted);}
-.footer-links{display:flex;gap:20px;}
-.footer-links a{font-size:.8rem;color:var(--muted);text-decoration:none;transition:color .2s;}
-.footer-links a:hover{color:var(--text);}
+/* Footer */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+}
+.footer-copy {
+  font-size: .82rem;
+  color: var(--muted);
+}
+.footer-links {
+  display: flex;
+  gap: 22px;
+}
+.footer-links a {
+  font-size: .82rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .2s;
+}
+.footer-links a:hover {
+  color: var(--text);
+}
 
-/* TAB CONTENT */
-.tab-content{display:none;}
-.tab-content.active{display:block;}
-
-/* AJUSTES PARA PERFIL PROPIO */
-.edit-profile-btn{margin-left:auto;}
+/* Mensaje de error */
+.error-box {
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  color: #ff8891;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin: 20px 28px;
+}
 </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
 <header>
   <a class="logo" href="{% url 'blog:welcome' %}">
     <div class="logo-mark">
-      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="12" rx="1.5" fill="#0e0e10"/><rect x="9" y="2" width="5" height="8" rx="1.5" fill="#0e0e10"/></svg>
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="5" height="12" rx="1.5" fill="#0e0e10"/>
+        <rect x="9" y="2" width="5" height="8" rx="1.5" fill="#0e0e10"/>
+      </svg>
     </div>
     <span class="logo-name">NextStory</span>
   </a>
-  <a class="nav-back" href="{% url 'blog:home' %}">← Volver al inicio</a>
+
+  <div class="nav-center">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input class="search" type="text" placeholder="Buscar historias, autores..."/>
+    </div>
+  </div>
+
   <div class="nav-actions">
-    {% if user.is_authenticated %}
-      <a class="btn-ghost" href="{% url 'blog:subir_libro' %}">+ Subir Libro</a>
-      {% if user.id == usuario.id %}
-        <a class="btn-solid" href="#">Editar Perfil</a>
+    <div class="nav-avatar" aria-label="Avatar usuario">
+      {% if perfil and perfil.foto %}
+        <img src="{{ perfil.foto }}" alt="Avatar">
+      {% else %}
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+          <rect width="36" height="36" fill="#1f1525"/>
+          <circle cx="18" cy="14" r="7" fill="#a78bf7" opacity=".9"/>
+          <ellipse cx="18" cy="30" rx="12" ry="8" fill="#a78bf7" opacity=".5"/>
+        </svg>
       {% endif %}
-    {% else %}
-      <a class="btn-ghost" href="#">Iniciar sesión</a>
-      <a class="btn-solid" href="#">Registrarse</a>
-    {% endif %}
+    </div>
   </div>
 </header>
 
-<!-- ── PROFILE HEADER ── -->
-<div class="profile-hero">
-  <div class="profile-container">
-    <div class="profile-avatar-wrap">
-      <!-- Inicial del nombre como avatar -->
-      <div class="profile-avatar">{{ usuario.nombre|first|upper }}</div>
-      {% if usuario.es_admin %}
-        <div class="profile-badges">⚡</div>
-      {% endif %}
-    </div>
+<div class="page">
 
-    <div class="profile-main">
-      <div class="profile-top-row">
-        <h1 class="profile-name">{{ usuario.nombre }} {{ usuario.apellido }}</h1>
-        <span class="profile-handle">@{{ usuario.nombre_usuario|default:"usuario" }} · {% if usuario.es_admin %}Administrador{% else %}Lector{% endif %}</span>
-        
-        {% if user.id != usuario.id and user.is_authenticated %}
-        <div class="profile-actions">
-          <button class="btn-follow" id="followBtn" onclick="toggleFollow()">+ Seguir</button>
-          <button class="btn-message">✉ Mensaje</button>
-        </div>
-        {% endif %}
-      </div>
+  {# Si hay error, lo mostramos #}
+  {% if error %}
+    <div class="error-box">{{ error }}</div>
+  {% endif %}
 
-      <div class="profile-meta">
-        <div class="meta-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>{{ usuario.ciudad|default:"Sin ubicación" }}, {{ usuario.pais|default:"" }}</span>
-        </div>
-        <div class="meta-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <span>Miembro desde: {{ usuario.fecha_registro|date:"F Y" }}</span>
-        </div>
-      </div>
-
-      <p class="profile-bio">{{ usuario.biografia|default:"Este usuario aún no ha escrito su biografía." }}</p>
-
-      <div class="profile-stats">
-        <div class="pstat"><div class="pstat-val">{{ total_libros|default:0 }}</div><div class="pstat-lbl">Libros</div></div>
-        <div class="pstat"><div class="pstat-val">{{ seguidores|default:0 }}</div><div class="pstat-lbl">Seguidores</div></div>
-        <div class="pstat"><div class="pstat-val">{{ siguiendo|default:0 }}</div><div class="pstat-lbl">Siguiendo</div></div>
-        <div class="pstat"><div class="pstat-val">{{ total_paginas|default:0 }}</div><div class="pstat-lbl">Páginas leídas</div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── CONTENT ── -->
-<div class="content-wrap">
-
-  <!-- TABS -->
-  <div class="tabs-bar">
-    <button class="tab active" onclick="switchTab(this,'tab-mislibros')">📚 Mis Libros</button>
-    <button class="tab" onclick="switchTab(this,'tab-favoritos')">❤️ Favoritos</button>
-    <button class="tab" onclick="switchTab(this,'tab-actividad')">⚡ Actividad</button>
+  <div class="profile-banner">
+    <div class="banner-bg"></div>
+    <button class="banner-edit" title="Editar portada">
+      <svg viewBox="0 0 24 24">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      Editar portada
+    </button>
   </div>
 
-  <!-- TAB: MIS LIBROS -->
-  <div id="tab-mislibros" class="tab-content active">
-    <div class="sec-title">Libros publicados</div>
-    <div class="stories-grid" id="mislibros-grid" style="min-height: 120px;">
-      {% for libro in mis_libros %}
-      <!-- Tarjeta de libro dinámica -->
-      <div class="bcard" onclick="window.location.href='{% url 'blog:perfil_libro' libro.id_libro %}'">
-        <div class="bcard-cover">
-          <!-- Icono de libro por defecto -->
-          <svg viewBox="0 0 160 240" xmlns="http://www.w3.org/2000/svg">
-            <rect width="160" height="240" fill="#1f1f25" rx="10"/>
-            <text x="50%" y="50%" text-anchor="middle" fill="#6b6b80" font-size="40">📖</text>
-          </svg>
-          <div class="bcard-cover-overlay"></div>
-        </div>
-        <div class="bcard-info">
-          <div class="bcard-title">{{ libro.titulo }}</div>
-          <div class="bcard-meta">
-            <span class="bcard-rating">★★★★★</span>
-            <span class="bcard-reads">{{ libro.fecha_creacion.year }}</span>
-          </div>
-        </div>
-      </div>
-      {% empty %}
-      <!-- Si no tiene libros -->
-      <p style="color: var(--muted); text-align: center; font-style: italic; margin-top: 40px; grid-column: 1 / -1;">
-        {% if user.id == usuario.id %}
-          No has subido o guardado ningún libro todavía. <a href="{% url 'blog:subir_libro' %}" style="color:var(--accent)">¡Sube tu primero!</a>
+  <div class="profile-identity">
+    <div class="avatar-wrap" aria-label="Avatar de usuario">
+      <div class="avatar">
+        {% if perfil and perfil.foto %}
+          <img src="{{ perfil.foto }}" alt="Foto de perfil">
         {% else %}
-          Este usuario no ha publicado ningún libro aún.
-        {% endif %}
-      </p>
-      {% endfor %}
-    </div>
-  </div>
-
-  <!-- TAB: FAVORITOS -->
-  <div id="tab-favoritos" class="tab-content">
-    <div class="sec-title">Libros favoritos</div>
-    <div class="stories-grid">
-      {% for libro in libros_favoritos %}
-      <div class="bcard" onclick="window.location.href='{% url 'blog:perfil_libro' libro.id_libro %}'">
-        <div class="bcard-cover">
-          <svg viewBox="0 0 160 240" xmlns="http://www.w3.org/2000/svg">
-            <rect width="160" height="240" fill="#1f1f25" rx="10"/>
-            <text x="50%" y="50%" text-anchor="middle" fill="#6b6b80" font-size="40">📖</text>
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100" height="100" fill="#1f1525"/>
+            <circle cx="50" cy="40" r="22" fill="#a78bf7" opacity=".9"/>
+            <ellipse cx="50" cy="82" rx="32" ry="22" fill="#a78bf7" opacity=".5"/>
+            <circle cx="50" cy="40" r="30" fill="#a78bf7" opacity=".06"/>
           </svg>
-        </div>
-        <div class="bcard-info">
-          <div class="bcard-title">{{ libro.titulo }}</div>
-          <div class="bcard-meta">
-            <span class="bcard-rating">★★★★★</span>
-          </div>
-        </div>
+        {% endif %}
       </div>
-      {% empty %}
-      <p style="color: var(--muted); text-align: center; font-style: italic; margin-top: 40px; grid-column: 1 / -1;">Aún no hay libros marcados como favoritos.</p>
-      {% endfor %}
+      <div class="avatar-badge">
+        <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="2,5 4.2,7.5 8,3" stroke="#0e0e10" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="profile-info">
+      {# Nombre completo del usuario - AHORA CON SEGURIDAD #}
+      <div class="profile-name">
+        {% if usuario %}
+          {{ usuario.nombre|default:"Usuario" }} {{ usuario.apellido|default:"" }}
+        {% else %}
+          {{ user.username|default:"Usuario Invitado" }}
+        {% endif %}
+      </div>
+      
+      {# Nombre de usuario @ #}
+      <div class="profile-handle">
+        <span>@{{ perfil.username|default:user.username }} · Lector</span>
+      </div>
+
+      {# Datos extra: ubicación, fecha, redes #}
+      <div class="profile-extra">
+        {% if usuario and usuario.estado %}
+        <span>
+          <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 0a5.53 5.53 0 0 0-1.91 10.57c.2.12.45.12.65 0A5.53 5.53 0 0 0 8 0Z"/></svg>
+          {{ usuario.estado }}
+        </span>
+        {% endif %}
+
+        <span>
+          <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7 2a5 5 0 0 1 5 5c0 2.21-1.79 4-4 4a4 4 0 1 1 0-8z"/></svg>
+          Miembro desde {{ usuario.registro.fecha_registro|date:"Y"|default:"2026" }}
+        </span>
+
+        {% if perfil and perfil.redes_sociales %}
+        <span>
+          <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="6"/></svg>
+          <a href="{{ perfil.redes_sociales }}" style="color: var(--accent); text-decoration: none;">Enlace</a>
+        </span>
+        {% endif %}
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn-edit-profile" aria-label="Editar perfil">Editar perfil</button>
+      </div>
     </div>
   </div>
 
-  <!-- TAB: ACTIVIDAD -->
-  <div id="tab-actividad" class="tab-content">
-    <div class="sec-title">Actividad reciente</div>
-    <div style="color:var(--muted); font-style:italic; padding:20px 0;">Próximamente: Comentarios, valoraciones y seguimientos.</div>
-  </div>
+  <div class="profile-body">
+    {# Biografía #}
+    <p class="profile-bio">
+      {{ perfil.descripcion|default:"Lector entusiasta que disfruta de buena literatura. Sin historias propias aún, pero con muchas ganas de descubrir y leer." }}
+    </p>
 
+    <div class="profile-tags">
+      <span class="profile-tag accent">Ficción</span>
+      <span class="profile-tag accent">Misterio</span>
+      <span class="profile-tag">🗓 Desde {{ usuario.registro.fecha_registro|date:"Y"|default:"2026" }}</span>
+    </div>
+
+    <div class="profile-tabs" role="tablist" aria-label="Secciones de perfil">
+      <button class="tab-btn active" data-tab="mislibros" aria-selected="true" role="tab" tabindex="0">
+        Mis libros <span class="tab-count">{{ total_libros|default:0 }}</span>
+      </button>
+    </div>
+
+    <div class="tab-panel active" id="tab-mislibros" role="tabpanel" tabindex="0">
+      <div class="stories-grid" id="mislibros-grid" style="min-height: 120px;">
+        
+        {% if mis_libros %}
+          {% for libro in mis_libros %}
+          <a href="{% url 'blog:perfil_libro' libro.id_libro %}" class="bcard">
+            <div class="bcard-cover">
+              {# Icono por defecto #}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              </svg>
+              <div class="bcard-cover-overlay"></div>
+              <span class="bcard-badge">{{ libro.estado|default:"Libro" }}</span>
+            </div>
+            <div class="bcard-info">
+              <div class="bcard-title">{{ libro.titulo }}</div>
+              <div class="bcard-meta">
+                <span class="bcard-rating">★★★★★</span>
+                <span class="bcard-reads">{{ libro.fecha_creacion|date:"Y" }}</span>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        {% else %}
+          <p style="color: var(--muted); text-align: center; font-style: italic; margin-top: 40px; grid-column: 1 / -1;">
+            No has subido ningún libro todavía.
+          </p>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <span class="footer-copy">© 2026 NextStory</span>
   <div class="footer-links">
@@ -262,23 +603,23 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
 </footer>
 
 <script>
-/* ── FOLLOW TOGGLE ── */
-let followed = false;
-function toggleFollow(){
-  followed = !followed;
-  const btn = document.getElementById('followBtn');
-  btn.textContent = followed ? '✓ Siguiendo' : '+ Seguir';
-  btn.style.background = followed ? 'var(--muted2)' : 'var(--accent)';
-  btn.style.color = followed ? 'var(--text)' : '#0e0e10';
-}
-
-/* ── TABS ── */
-function switchTab(el,id){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
+const tabs = document.querySelectorAll('.tab-btn');
+const panels = document.querySelectorAll('.tab-panel');
+tabs.forEach((tab, i) => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+      t.setAttribute('tabindex', '-1');
+    });
+    panels.forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+    tab.setAttribute('tabindex', '0');
+    panels[i].classList.add('active');
+  });
+});
 </script>
+
 </body>
 </html>

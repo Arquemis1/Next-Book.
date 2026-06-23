@@ -27,4 +27,5 @@ urlpatterns = [
     # ✅ Rutas de cuentas (Login, Registro, Logout)
     # Coincide exactamente con los enlaces que pusimos: /accounts/login/, /accounts/register/
     path('accounts/', include('users.urls')),
+    path('users/', include('users.urls')),
 ]
