@@ -277,3 +277,5 @@ def registro(request):
             })
 
     return render(request, 'blog/registro.html')
+
+    

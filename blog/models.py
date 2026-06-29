@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import models
 from django.utils import timezone
 
 
@@ -51,10 +52,8 @@ class Libro(models.Model):
     fecha_creacion = models.DateTimeField(blank=True, null=True)
     estado = models.CharField(max_length=50, blank=True, null=True)
     archivo_pdf = models.TextField(blank=True, null=True)
-
-    # 👇 CAMPO NUEVO PARA LA PORTADA
     portada = models.ImageField(
-        upload_to='portadas/',          # Carpeta donde se guardarán las imágenes
+        upload_to='portadas/',
         blank=True,
         null=True,
         verbose_name="Imagen de portada"
@@ -163,12 +162,16 @@ class Perfil(models.Model):
     id = models.BigAutoField(primary_key=True)
     username = models.CharField(unique=True, max_length=100, blank=True, null=True)
     descripcion = models.TextField(blank=True, null=True)
-    foto = models.CharField(max_length=255, blank=True, null=True)
+    foto = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    portada = models.ImageField(upload_to='portadas/', blank=True, null=True)
     redes_sociales = models.TextField(blank=True, null=True)
     usuario = models.OneToOneField(Usuario, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         db_table = 'perfil'
+
+    def __str__(self):
+        return self.username or str(self.id)
 
 
 class Reporte(models.Model):

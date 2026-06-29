@@ -43,3 +43,25 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'users/register.html', {'form': form})
+
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+
+@login_required
+@require_POST
+def editar_perfil(request):
+    perfil, _ = Perfil.objects.get_or_create(usuario=request.user)
+
+    if 'descripcion' in request.POST:
+        perfil.descripcion = request.POST['descripcion'][:300]
+    if 'nombre' in request.POST:
+        request.user.first_name = request.POST['nombre']
+        request.user.save()
+    if 'foto' in request.FILES:
+        perfil.foto = request.FILES['foto']
+    if 'portada' in request.FILES:
+        perfil.portada = request.FILES['portada']
+
+    perfil.save()
+    return JsonResponse({'ok': True})

@@ -652,7 +652,9 @@ footer {
         {% endif %}
        ▾</button>
       <div class="user-dropdown" id="menuPerfil">
-        <a href="{% url 'blog:perfil_usuario' %}">Mi Perfil</a>
+        <a href="{% url 'blog:perfil_usuario' usuario_real.id %}">
+    Mi Perfil
+</a>
         <a href="#">Mensajes</a>
         <a href="#">Mis Historias</a>
         {% if es_administrador %}
