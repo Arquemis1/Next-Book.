@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -83,10 +84,7 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
 
-        .card-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
+        .card-header { text-align: center; margin-bottom: 2rem; }
 
         .card-header h1 {
             font-family: 'Syne', sans-serif;
@@ -134,6 +132,18 @@
             display: block;
         }
 
+        /* Estilo para inputs con error */
+        .form-group input.error-input {
+            border-color: var(--error);
+        }
+
+        .field-error {
+            font-size: 0.8rem;
+            color: var(--error);
+            margin-top: 0.3rem;
+            display: block;
+        }
+
         .btn {
             width: 100%;
             padding: 0.85rem;
@@ -163,12 +173,7 @@
             font-size: 0.9rem;
         }
 
-        .links a {
-            color: var(--accent);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
+        .links a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
         .links a:hover { color: var(--accent2); text-decoration: underline; }
 
         .errorlist {
@@ -182,7 +187,7 @@
             font-size: 0.85rem;
         }
 
-        /* ── MODAL OVERLAY ── */
+        /* MODAL */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -247,11 +252,7 @@
             color: #fff;
         }
 
-        .modal-header p {
-            color: var(--muted);
-            font-size: 0.85rem;
-            padding-left: 48px;
-        }
+        .modal-header p { color: var(--muted); font-size: 0.85rem; padding-left: 48px; }
 
         .modal-body {
             overflow-y: auto;
@@ -262,11 +263,9 @@
         }
 
         .modal-body::-webkit-scrollbar { width: 4px; }
-        .modal-body::-webkit-scrollbar-track { background: transparent; }
         .modal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
         .terms-section { margin-bottom: 1.6rem; }
-
         .terms-section:last-child { margin-bottom: 0; }
 
         .terms-section h3 {
@@ -279,16 +278,8 @@
             margin-bottom: 0.6rem;
         }
 
-        .terms-section p {
-            font-size: 0.88rem;
-            color: var(--muted);
-            line-height: 1.65;
-        }
-
-        .terms-section ul {
-            list-style: none;
-            margin-top: 0.5rem;
-        }
+        .terms-section p { font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
+        .terms-section ul { list-style: none; margin-top: 0.5rem; }
 
         .terms-section ul li {
             font-size: 0.88rem;
@@ -298,12 +289,7 @@
             position: relative;
         }
 
-        .terms-section ul li::before {
-            content: '·';
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-        }
+        .terms-section ul li::before { content: '·'; position: absolute; left: 0; color: var(--accent); }
 
         .scroll-hint {
             display: flex;
@@ -350,45 +336,45 @@
         <form id="registerForm" method="post">
             {% csrf_token %}
 
-            {% if form.errors %}
+            {% if error %}
                 <ul class="errorlist">
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
+                    <li>{{ error }}</li>
                 </ul>
             {% endif %}
 
             <div class="form-group">
-                <label for="id_username">Nombre de usuario</label>
-                {{ form.username }}
-                <span class="helptext">Máximo 150 caracteres. Solo letras, números y @/./+/-/_</span>
+                <label for="id_nombre">Nombre de usuario</label>
+                <input type="text" id="id_nombre" name="nombre"
+                       placeholder="Tu nombre de usuario" required
+                       value="{{ request.POST.nombre }}">
             </div>
 
             <div class="form-group">
                 <label for="id_email">Correo electrónico</label>
-                {{ form.email }}
+                <input type="email" id="id_email" name="email"
+                       placeholder="correo@ejemplo.com" required
+                       value="{{ request.POST.email }}">
             </div>
 
             <div class="form-group">
-                <label for="id_password1">Contraseña</label>
-                {{ form.password1 }}
-                <span class="helptext">Al menos 8 caracteres. No puede ser tan común ni totalmente numérica.</span>
+                <label for="id_password">Contraseña</label>
+                <input type="password" id="id_password" name="password"
+                       placeholder="Mínimo 8 caracteres" required>
+                <span class="helptext">Al menos 8 caracteres.</span>
             </div>
 
             <div class="form-group">
                 <label for="id_password2">Repetir contraseña</label>
-                {{ form.password2 }}
-                <span class="helptext">Escribe la misma contraseña de antes, para verificar.</span>
+                <input type="password" id="id_password2" name="password2"
+                       placeholder="Repite tu contraseña" required>
+                <span class="helptext">Escribe la misma contraseña para verificar.</span>
             </div>
 
-            <!-- Este botón abre el modal, NO envía el form todavía -->
-            <button type="button" class="btn btn-solid" onclick="openTerms()">Registrarme</button>
+            <button type="button" class="btn btn-solid" onclick="validarYAbrir()">Registrarme</button>
         </form>
 
         <div class="links">
-            <p>¿Ya tienes cuenta? <a href="{% url 'login' %}">Iniciar sesión</a></p>
+            <p>¿Ya tienes cuenta? <a href="/accounts/login/">Iniciar sesión</a></p>
             <p style="margin-top: 1rem; font-size: 0.85rem; opacity: 0.7;">
                 <a href="{% url 'blog:welcome' %}">← Volver al inicio</a>
             </p>
@@ -396,7 +382,7 @@
     </div>
 </div>
 
-<!-- ── MODAL TÉRMINOS Y CONDICIONES ── -->
+<!-- MODAL TÉRMINOS Y CONDICIONES -->
 <div class="modal-overlay" id="termsModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal">
 
@@ -425,12 +411,10 @@
                 <h3>1. Aceptación de los términos</h3>
                 <p>Al crear una cuenta en NextStory, aceptas cumplir y quedar vinculado por estos Términos y Condiciones, así como por nuestra Política de Privacidad. Si no estás de acuerdo con alguno de estos términos, no debes utilizar nuestra plataforma.</p>
             </div>
-
             <div class="terms-section">
                 <h3>2. Descripción del servicio</h3>
                 <p>NextStory es una plataforma digital literaria colombiana que permite a los usuarios leer, escribir y compartir contenido literario. El servicio está destinado a mayores de 13 años.</p>
             </div>
-
             <div class="terms-section">
                 <h3>3. Tu cuenta</h3>
                 <p>Eres responsable de mantener la confidencialidad de tu contraseña y de todas las actividades que ocurran bajo tu cuenta. Debes:</p>
@@ -441,7 +425,6 @@
                     <li>Ser responsable de todo el contenido que publiques.</li>
                 </ul>
             </div>
-
             <div class="terms-section">
                 <h3>4. Contenido del usuario</h3>
                 <p>Al publicar contenido en NextStory, declaras que:</p>
@@ -452,7 +435,6 @@
                     <li>Otorgas a NextStory una licencia no exclusiva para mostrar tu contenido en la plataforma.</li>
                 </ul>
             </div>
-
             <div class="terms-section">
                 <h3>5. Conducta del usuario</h3>
                 <p>Está prohibido usar NextStory para:</p>
@@ -463,22 +445,18 @@
                     <li>Suplantar la identidad de otras personas u organizaciones.</li>
                 </ul>
             </div>
-
             <div class="terms-section">
                 <h3>6. Privacidad y datos personales</h3>
-                <p>Recopilamos y tratamos tus datos personales según nuestra Política de Privacidad, en cumplimiento de la Ley 1581 de 2012 (Ley de Protección de Datos Personales de Colombia) y el Decreto 1377 de 2013. Tus datos no serán vendidos ni cedidos a terceros sin tu consentimiento expreso.</p>
+                <p>Recopilamos y tratamos tus datos personales según nuestra Política de Privacidad, en cumplimiento de la Ley 1581 de 2012 y el Decreto 1377 de 2013. Tus datos no serán vendidos ni cedidos a terceros sin tu consentimiento expreso.</p>
             </div>
-
             <div class="terms-section">
                 <h3>7. Propiedad intelectual</h3>
-                <p>La marca NextStory, su diseño, logotipos y código fuente son propiedad de sus creadores y están protegidos por las leyes colombianas e internacionales de propiedad intelectual. Queda prohibida su reproducción sin autorización previa.</p>
+                <p>La marca NextStory, su diseño, logotipos y código fuente son propiedad de sus creadores y están protegidos por las leyes colombianas e internacionales de propiedad intelectual.</p>
             </div>
-
             <div class="terms-section">
                 <h3>8. Modificaciones</h3>
-                <p>NextStory se reserva el derecho de modificar estos términos en cualquier momento. Los cambios serán notificados a través de la plataforma. El uso continuado del servicio tras la notificación implica la aceptación de los nuevos términos.</p>
+                <p>NextStory se reserva el derecho de modificar estos términos en cualquier momento. El uso continuado del servicio implica la aceptación de los nuevos términos.</p>
             </div>
-
             <div class="terms-section">
                 <h3>9. Ley aplicable</h3>
                 <p>Estos términos se rigen por las leyes de la República de Colombia. Cualquier disputa será resuelta ante los tribunales competentes de la ciudad de Cali, Valle del Cauca.</p>
@@ -493,12 +471,42 @@
 </div>
 
 <script>
+    // Validar contraseñas antes de abrir el modal
+    function validarYAbrir() {
+        const pass1 = document.getElementById('id_password').value;
+        const pass2 = document.getElementById('id_password2').value;
+
+        // Quitar errores previos
+        document.getElementById('id_password').classList.remove('error-input');
+        document.getElementById('id_password2').classList.remove('error-input');
+        document.querySelectorAll('.field-error').forEach(e => e.remove());
+
+        if (pass1.length < 8) {
+            mostrarError('id_password', 'La contraseña debe tener al menos 8 caracteres.');
+            return;
+        }
+
+        if (pass1 !== pass2) {
+            mostrarError('id_password2', 'Las contraseñas no coinciden.');
+            return;
+        }
+
+        openTerms();
+    }
+
+    function mostrarError(fieldId, mensaje) {
+        const input = document.getElementById(fieldId);
+        input.classList.add('error-input');
+        const span = document.createElement('span');
+        span.className = 'field-error';
+        span.textContent = mensaje;
+        input.parentNode.appendChild(span);
+        input.focus();
+    }
+
     function openTerms() {
         document.getElementById('termsModal').classList.add('active');
-        // Scroll del modal al inicio cada vez que se abre
         document.getElementById('modalBody').scrollTop = 0;
-        // Foco al modal para accesibilidad
-        document.getElementById('termsModal').focus();
     }
 
     function closeTerms() {
@@ -507,16 +515,13 @@
 
     function acceptAndRegister() {
         closeTerms();
-        // Envía el formulario real al servidor
         document.getElementById('registerForm').submit();
     }
 
-    // Cerrar con Escape
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeTerms();
     });
 
-    // Cerrar al hacer clic fuera del modal
     document.getElementById('termsModal').addEventListener('click', function(e) {
         if (e.target === this) closeTerms();
     });

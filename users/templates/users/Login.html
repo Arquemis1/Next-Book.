@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -18,11 +19,7 @@
             --error:    #ff6b6b;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background: var(--bg);
@@ -100,14 +97,9 @@
             margin-bottom: 0.5rem;
         }
 
-        .card-header p {
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
+        .card-header p { color: var(--muted); font-size: 0.95rem; }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+        .form-group { margin-bottom: 1.5rem; }
 
         .form-group label {
             display: block;
@@ -134,9 +126,7 @@
             box-shadow: 0 0 0 3px rgba(200,240,110, 0.1);
         }
 
-        .form-group input::placeholder {
-            color: var(--muted);
-        }
+        .form-group input::placeholder { color: var(--muted); }
 
         .btn {
             width: 100%;
@@ -150,15 +140,8 @@
             border: none;
         }
 
-        .btn-solid {
-            background: var(--accent);
-            color: #0e0e10;
-        }
-
-        .btn-solid:hover {
-            background: var(--accent2);
-            transform: translateY(-2px);
-        }
+        .btn-solid { background: var(--accent); color: #0e0e10; }
+        .btn-solid:hover { background: var(--accent2); transform: translateY(-2px); }
 
         .links {
             margin-top: 1.5rem;
@@ -166,16 +149,8 @@
             font-size: 0.9rem;
         }
 
-        .links a {
-            color: var(--accent);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .links a:hover {
-            color: var(--accent2);
-            text-decoration: underline;
-        }
+        .links a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+        .links a:hover { color: var(--accent2); text-decoration: underline; }
 
         .errorlist {
             background: rgba(255, 107, 107, 0.1);
@@ -187,13 +162,11 @@
             list-style: none;
             font-size: 0.85rem;
         }
-
     </style>
 </head>
 <body>
 
 <div class="login-container">
-    <!-- Logo -->
     <a href="{% url 'blog:welcome' %}" class="logo">
         <div class="logo-mark">
             <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -204,7 +177,6 @@
         <span class="logo-name">NextStory</span>
     </a>
 
-    <!-- Tarjeta de Login -->
     <div class="card">
         <div class="card-header">
             <h1>Iniciar Sesión</h1>
@@ -213,7 +185,7 @@
 
         <form method="post">
             {% csrf_token %}
-            
+
             {% if form.errors %}
                 <ul class="errorlist">
                     <strong>¡Ups!</strong> Tu usuario o contraseña son incorrectos.
@@ -234,38 +206,15 @@
         </form>
 
         <div class="links">
-            <p>¿Olvidaste tu contraseña? <a href="{% url 'password_reset' %}">Recuperar</a></p>
-            <p>¿No tienes cuenta? <a href="{% url 'register' %}">Crear cuenta</a></p>
+            <p>¿Olvidaste tu contraseña? <a href="{% url 'users:password_reset' %}">Recuperar</a></p>
+            <!-- ✅ CORRECCIÓN: ruta directa en lugar de {% url 'blog:registro' %} -->
+            <p>¿No tienes cuenta? <a href="/registro/">Crear cuenta</a></p>
             <p style="margin-top: 1rem; font-size: 0.85rem; opacity: 0.7;">
                 <a href="{% url 'blog:welcome' %}">← Volver al inicio</a>
             </p>
         </div>
     </div>
 </div>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const botonUsuario = document.getElementById("botonUsuario");
-  const menuPerfil = document.getElementById("menuPerfil");
-  const enlaceCerrar = document.getElementById("enlaceCerrar");
 
-  if (botonUsuario && menuPerfil) {
-    botonUsuario.addEventListener("click", function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      menuPerfil.classList.toggle("mostrar");
-    });
-
-    if (enlaceCerrar) {
-      enlaceCerrar.addEventListener("click", function() {
-        localStorage.removeItem("usuarioActual");
-      });
-    }
-
-    document.addEventListener("click", function() {
-      menuPerfil.classList.remove("mostrar");
-    });
-  }
-});
-</script>
 </body>
 </html>

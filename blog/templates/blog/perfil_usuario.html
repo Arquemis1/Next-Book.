@@ -1,3 +1,4 @@
+
 {# blog/templates/blog/perfil_usuario.html #}
 <!DOCTYPE html>
 <html lang="es">
@@ -273,16 +274,13 @@ footer {
   color: #ff8891; padding: 12px 20px; border-radius: 8px; margin: 20px 28px;
 }
 
-/* ═══════════════════════════════════════
-   MODAL EDITAR PERFIL
-═══════════════════════════════════════ */
+/* MODAL EDITAR PERFIL */
 .modal-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,.78); backdrop-filter: blur(5px);
   z-index: 500; align-items: center; justify-content: center; padding: 1.5rem;
 }
 .modal-overlay.active { display: flex; }
-
 .edit-modal {
   background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
   width: 100%; max-width: 560px; max-height: 90vh;
@@ -291,15 +289,12 @@ footer {
   animation: slideUp .25s ease;
 }
 @keyframes slideUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
-
 .edit-modal-header {
   padding: 1.6rem 1.8rem 1.1rem;
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
 }
-.edit-modal-header h2 {
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem; color: #fff;
-}
+.edit-modal-header h2 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem; color: #fff; }
 .modal-close-btn {
   width: 32px; height: 32px; border-radius: 8px;
   background: var(--surface2); border: 1px solid var(--border);
@@ -307,50 +302,30 @@ footer {
 }
 .modal-close-btn:hover { border-color: var(--accent); }
 .modal-close-btn svg { width: 14px; height: 14px; stroke: var(--muted); fill: none; stroke-width: 2.2; stroke-linecap: round; }
-
 .edit-modal-body { overflow-y: auto; padding: 1.5rem 1.8rem; flex: 1; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 .edit-modal-body::-webkit-scrollbar { width: 4px; }
 .edit-modal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-/* Sección preview de imágenes dentro del modal */
 .upload-section { margin-bottom: 1.6rem; }
-.upload-section-label {
-  font-size: .82rem; font-weight: 600; color: var(--text);
-  letter-spacing: .04em; text-transform: uppercase; margin-bottom: .8rem; display: block;
-}
-
-/* Portada upload */
+.upload-section-label { font-size: .82rem; font-weight: 600; color: var(--text); letter-spacing: .04em; text-transform: uppercase; margin-bottom: .8rem; display: block; }
 .banner-upload-box {
   width: 100%; height: 110px; border-radius: 12px;
   border: 2px dashed var(--border); background: var(--surface2);
   position: relative; overflow: hidden; cursor: pointer;
-  transition: border-color .2s;
-  display: flex; align-items: center; justify-content: center;
+  transition: border-color .2s; display: flex; align-items: center; justify-content: center;
 }
 .banner-upload-box:hover { border-color: var(--accent); }
-.banner-upload-box img {
-  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 10px;
-}
-.upload-placeholder {
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  pointer-events: none; z-index: 1; position: relative;
-}
+.banner-upload-box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+.upload-placeholder { display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; z-index: 1; position: relative; }
 .upload-placeholder svg { width: 28px; height: 28px; stroke: var(--muted); fill: none; stroke-width: 1.5; }
 .upload-placeholder span { font-size: .8rem; color: var(--muted); }
-.upload-overlay {
-  position: absolute; inset: 0; background: rgba(0,0,0,.45);
-  display: none; align-items: center; justify-content: center; border-radius: 10px; z-index: 2;
-}
+.upload-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; border-radius: 10px; z-index: 2; }
 .upload-overlay svg { width: 24px; height: 24px; stroke: #fff; fill: none; stroke-width: 2; }
 .banner-upload-box:hover .upload-overlay { display: flex; }
-
-/* Avatar upload en modal */
 .avatar-upload-row { display: flex; align-items: center; gap: 16px; }
 .avatar-preview-modal {
   width: 72px; height: 72px; border-radius: 50%;
   background: var(--surface2); border: 3px solid var(--border);
-  overflow: hidden; flex-shrink: 0; position: relative; cursor: pointer;
-  transition: border-color .2s;
+  overflow: hidden; flex-shrink: 0; position: relative; cursor: pointer; transition: border-color .2s;
 }
 .avatar-preview-modal:hover { border-color: var(--accent); }
 .avatar-preview-modal img, .avatar-preview-modal svg { width: 100%; height: 100%; display: block; object-fit: cover; }
@@ -358,13 +333,8 @@ footer {
 .avatar-preview-modal:hover .upload-overlay { display: flex; }
 .avatar-upload-info { font-size: .82rem; color: var(--muted); line-height: 1.5; }
 .avatar-upload-info strong { color: var(--text); display: block; margin-bottom: 2px; font-weight: 600; }
-
-/* Campo descripción */
 .field-group { margin-bottom: 1.4rem; }
-.field-group label {
-  display: block; margin-bottom: .5rem;
-  font-size: .85rem; font-weight: 600; color: var(--text);
-}
+.field-group label { display: block; margin-bottom: .5rem; font-size: .85rem; font-weight: 600; color: var(--text); }
 .field-group input, .field-group textarea {
   width: 100%; padding: .8rem 1rem;
   background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
@@ -375,12 +345,7 @@ footer {
 .field-group textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
 .field-group input::placeholder, .field-group textarea::placeholder { color: var(--muted); }
 .char-count { font-size: .75rem; color: var(--muted); text-align: right; margin-top: .3rem; }
-
-.edit-modal-footer {
-  padding: 1.1rem 1.8rem 1.5rem;
-  border-top: 1px solid var(--border);
-  display: flex; gap: .75rem; flex-shrink: 0;
-}
+.edit-modal-footer { padding: 1.1rem 1.8rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: .75rem; flex-shrink: 0; }
 .btn-cancel {
   flex: 1; padding: .8rem; border-radius: 10px;
   background: transparent; border: 1px solid var(--border); color: var(--muted);
@@ -395,16 +360,13 @@ footer {
   cursor: pointer; transition: background .2s, transform .15s;
 }
 .btn-save:hover { background: var(--accent2); transform: translateY(-1px); }
-
-/* toast */
 .toast {
   position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
   background: var(--surface); border: 1px solid var(--accent);
   color: var(--accent); font-size: .88rem; font-weight: 500;
   padding: 10px 22px; border-radius: 100px;
   box-shadow: 0 8px 32px rgba(0,0,0,.4);
-  opacity: 0; transition: opacity .3s, transform .3s; z-index: 600;
-  pointer-events: none;
+  opacity: 0; transition: opacity .3s, transform .3s; z-index: 600; pointer-events: none;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
@@ -573,7 +535,6 @@ footer {
 
     <div class="tab-panel active" id="tab-mislibros" role="tabpanel" tabindex="0">
       <div class="stories-grid" id="mislibros-grid" style="min-height: 120px;">
-
         {% if mis_libros %}
           {% for libro in mis_libros %}
           <a href="{% url 'blog:perfil_libro' libro.id_libro %}" class="bcard">
@@ -595,7 +556,6 @@ footer {
           </a>
           {% endfor %}
         {% else %}
-          <!-- Demo estático (se puede quitar en producción) -->
           <div class="bcard" onclick="window.location.href='#'">
             <div class="bcard-cover">
               <svg viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg">
@@ -619,7 +579,6 @@ footer {
             </div>
           </div>
         {% endif %}
-
       </div>
     </div>
   </div>
@@ -635,22 +594,16 @@ footer {
   </div>
 </footer>
 
-<!-- ═══════════════════════════════════════
-     MODAL EDITAR PERFIL
-═══════════════════════════════════════ -->
+<!-- MODAL EDITAR PERFIL -->
 <div class="modal-overlay" id="editModal" role="dialog" aria-modal="true" aria-labelledby="modalEditTitle">
   <div class="edit-modal">
-
     <div class="edit-modal-header">
       <h2 id="modalEditTitle">Editar perfil</h2>
       <button class="modal-close-btn" id="modalCloseBtn" aria-label="Cerrar">
         <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-
     <div class="edit-modal-body">
-
-      <!-- Portada -->
       <div class="upload-section">
         <span class="upload-section-label">Foto de portada</span>
         <div class="banner-upload-box" id="bannerUploadBox" title="Haz clic para cambiar la portada">
@@ -666,8 +619,6 @@ footer {
           <input type="file" id="bannerFileInput" accept="image/*" style="display:none;" />
         </div>
       </div>
-
-      <!-- Avatar -->
       <div class="upload-section">
         <span class="upload-section-label">Foto de perfil</span>
         <div class="avatar-upload-row">
@@ -689,22 +640,16 @@ footer {
           </div>
         </div>
       </div>
-
-      <!-- Nombre -->
       <div class="field-group">
         <label for="inputNombre">Nombre completo</label>
         <input type="text" id="inputNombre" placeholder="Tu nombre o apodo" maxlength="60" />
       </div>
-
-      <!-- Descripción / Bio -->
       <div class="field-group">
         <label for="inputBio">Descripción / Sobre mí</label>
         <textarea id="inputBio" maxlength="300" placeholder="Cuéntale a la comunidad quién eres, qué te gusta leer o escribir..."></textarea>
         <div class="char-count"><span id="bioChars">0</span> / 300</div>
       </div>
-
     </div>
-
     <div class="edit-modal-footer">
       <button class="btn-cancel" id="modalCancelBtn">Cancelar</button>
       <button class="btn-save" id="modalSaveBtn">Guardar cambios</button>
@@ -712,22 +657,18 @@ footer {
   </div>
 </div>
 
-<!-- Toast de confirmación -->
 <div class="toast" id="toast">✓ Perfil actualizado</div>
 
-<!-- Inputs ocultos para trigger de banner desde el botón externo -->
-<input type="file" id="bannerFileInputExt" accept="image/*" style="display:none;" />
-
 <script>
-/* ── Utilidad: leer archivo como dataURL ── */
 function readFile(file, cb) {
   const r = new FileReader();
   r.onload = e => cb(e.target.result);
   r.readAsDataURL(file);
 }
 
-/* ── Estado del perfil (localStorage para persistir) ── */
-const STORAGE_KEY = 'ns_perfil_v1';
+const CURRENT_USER = "{{ user.username }}";
+const STORAGE_KEY  = 'ns_perfil_v1_' + CURRENT_USER;
+
 let state = { avatarSrc: null, bannerSrc: null, nombre: '', bio: '' };
 try {
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -738,46 +679,33 @@ function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
 }
 
-/* ── Aplicar estado al DOM principal ── */
 function applyState() {
-  // avatar
-  const avatarEl = document.getElementById('avatarEl');
+  const avatarEl  = document.getElementById('avatarEl');
   const navAvatar = document.getElementById('navAvatar');
   if (state.avatarSrc) {
-    avatarEl.innerHTML = `<img src="${state.avatarSrc}" alt="Foto de perfil" style="width:100%;height:100%;object-fit:cover;">`;
+    avatarEl.innerHTML  = `<img src="${state.avatarSrc}" alt="Foto de perfil" style="width:100%;height:100%;object-fit:cover;">`;
     navAvatar.innerHTML = `<img src="${state.avatarSrc}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
   }
-  // banner
   const bannerImg = document.getElementById('bannerImg');
   const bannerBg  = document.getElementById('bannerBg');
   if (state.bannerSrc) {
     bannerImg.src = state.bannerSrc;
     bannerImg.style.display = 'block';
-    bannerBg.style.opacity = '0';
+    bannerBg.style.opacity  = '0';
   }
-  // nombre
-  if (state.nombre) {
-    document.getElementById('displayName').textContent = state.nombre;
-  }
-  // bio
-  if (state.bio) {
-    document.getElementById('displayBio').textContent = state.bio;
-  }
+  if (state.nombre) document.getElementById('displayName').textContent = state.nombre;
+  if (state.bio)    document.getElementById('displayBio').textContent  = state.bio;
 }
 
 applyState();
 
-/* ── MODAL ── */
 const editModal    = document.getElementById('editModal');
 const modalSaveBtn = document.getElementById('modalSaveBtn');
 
 function openEditModal() {
-  // Pre-rellenar campos con estado actual
   document.getElementById('inputNombre').value = state.nombre || '';
   document.getElementById('inputBio').value    = state.bio    || '';
   updateBioCount();
-
-  // Preview avatar en modal
   const avatarModalBox = document.getElementById('avatarUploadBox');
   if (state.avatarSrc) {
     const existingImg = avatarModalBox.querySelector('img.modal-av-img');
@@ -792,15 +720,12 @@ function openEditModal() {
       existingImg.src = state.avatarSrc;
     }
   }
-
-  // Preview banner en modal
   if (state.bannerSrc) {
     const prev = document.getElementById('bannerPreviewModal');
     prev.src = state.bannerSrc;
     prev.style.display = 'block';
     document.getElementById('bannerPlaceholder').style.display = 'none';
   }
-
   editModal.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
@@ -811,20 +736,15 @@ function closeEditModal() {
 }
 
 document.getElementById('editProfileBtn').addEventListener('click', openEditModal);
-document.getElementById('editBannerBtn').addEventListener('click', () => {
-  // clic en botón externo → abre modal ya en la sección de portada
-  openEditModal();
-  document.getElementById('editModal').querySelector('.edit-modal-body').scrollTop = 0;
-});
+document.getElementById('editBannerBtn').addEventListener('click', () => { openEditModal(); document.getElementById('editModal').querySelector('.edit-modal-body').scrollTop = 0; });
 document.getElementById('avatarWrap').addEventListener('click', openEditModal);
 document.getElementById('modalCloseBtn').addEventListener('click', closeEditModal);
 document.getElementById('modalCancelBtn').addEventListener('click', closeEditModal);
 editModal.addEventListener('click', e => { if (e.target === editModal) closeEditModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEditModal(); });
 
-/* ── Upload BANNER en modal ── */
-const bannerUploadBox   = document.getElementById('bannerUploadBox');
-const bannerFileInput   = document.getElementById('bannerFileInput');
+const bannerUploadBox    = document.getElementById('bannerUploadBox');
+const bannerFileInput    = document.getElementById('bannerFileInput');
 const bannerPreviewModal = document.getElementById('bannerPreviewModal');
 const bannerPlaceholder  = document.getElementById('bannerPlaceholder');
 
@@ -836,13 +756,12 @@ bannerFileInput.addEventListener('change', () => {
     state.bannerSrc = src;
     bannerPreviewModal.src = src;
     bannerPreviewModal.style.display = 'block';
-    bannerPlaceholder.style.display = 'none';
+    bannerPlaceholder.style.display  = 'none';
   });
 });
 
-/* ── Upload AVATAR en modal ── */
-const avatarUploadBox  = document.getElementById('avatarUploadBox');
-const avatarFileInput  = document.getElementById('avatarFileInput');
+const avatarUploadBox = document.getElementById('avatarUploadBox');
+const avatarFileInput = document.getElementById('avatarFileInput');
 
 avatarUploadBox.addEventListener('click', () => avatarFileInput.click());
 avatarFileInput.addEventListener('change', () => {
@@ -862,43 +781,35 @@ avatarFileInput.addEventListener('change', () => {
   });
 });
 
-/* ── Contador bio ── */
 function updateBioCount() {
-  const len = document.getElementById('inputBio').value.length;
-  document.getElementById('bioChars').textContent = len;
+  document.getElementById('bioChars').textContent = document.getElementById('inputBio').value.length;
 }
 document.getElementById('inputBio').addEventListener('input', updateBioCount);
 
-/* ── GUARDAR ── */
 modalSaveBtn.addEventListener('click', () => {
   const nombre = document.getElementById('inputNombre').value.trim();
   const bio    = document.getElementById('inputBio').value.trim();
-
   if (nombre) state.nombre = nombre;
-  if (bio !== undefined) state.bio = bio;
-
+  state.bio = bio;
   saveState();
   applyState();
   closeEditModal();
-
-  // Toast
   const toast = document.getElementById('toast');
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 2800);
 });
 
-/* ── Tabs ── */
 document.querySelectorAll('.tab-btn').forEach((tab, i) => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected','true');
     document.querySelectorAll('.tab-panel')[i].classList.add('active');
   });
 });
 
-/* ── Dropdown menú ── */
-const avatarBtn = document.getElementById('menuTriggerBtn');
+const avatarBtn      = document.getElementById('menuTriggerBtn');
 const avatarDropdown = document.getElementById('avatarDropdown');
 
 avatarBtn.addEventListener('click', e => {
@@ -917,31 +828,21 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { avatarDropdown.classList.remove('open'); avatarBtn.setAttribute('aria-expanded','false'); }
 });
 
-function closeDropdown() { avatarDropdown.classList.remove('open'); avatarBtn.setAttribute('aria-expanded','false'); }
+function closeDropdown() {
+  avatarDropdown.classList.remove('open');
+  avatarBtn.setAttribute('aria-expanded','false');
+}
 
-document.getElementById('menuPerfil')?.addEventListener('click',    () => { closeDropdown(); window.scrollTo({top:0,behavior:'smooth'}); });
-document.getElementById('menuBiblioteca')?.addEventListener('click', () => { closeDropdown(); window.open('index.html','_blank'); });
-document.getElementById('menuAyuda')?.addEventListener('click',      () => { closeDropdown(); window.location.href='ayuda-nextstory.html'; });
-document.getElementById('menuMensajes')?.addEventListener('click',   () => { closeDropdown(); window.location.href='mensajes.html'; });
-document.getElementById('menuAjustes')?.addEventListener('click',    () => { closeDropdown(); window.open('menu-de-ajustes-usuario.html','_blank'); });
-document.getElementById('menuSalir')?.addEventListener('click',      () => { closeDropdown(); window.location.href='index-nologueado.html'; });
+document.getElementById('menuPerfil')?.addEventListener('click',     () => { closeDropdown(); window.scrollTo({top:0,behavior:'smooth'}); });
+document.getElementById('menuBiblioteca')?.addEventListener('click', () => { closeDropdown(); window.location.href = '/home/'; });
+document.getElementById('menuAyuda')?.addEventListener('click',      () => { closeDropdown(); window.location.href = '/ayuda/'; });
+document.getElementById('menuMensajes')?.addEventListener('click',   () => { closeDropdown(); window.location.href = '/mensajes/'; });
+document.getElementById('menuAjustes')?.addEventListener('click',    () => { closeDropdown(); window.location.href = '/ajustes/'; });
 
-/* ── GUARDAR ── */
-modalSaveBtn.addEventListener('click', () => {
-  const nombre = document.getElementById('inputNombre').value.trim();
-  const bio    = document.getElementById('inputBio').value.trim();
-
-  if (nombre) state.nombre = nombre;
-  if (bio !== undefined) state.bio = bio;
-
-  saveState();
-  applyState();
-  closeEditModal();
-
-  // Toast
-  const toast = document.getElementById('toast');
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2800);
+/* ── CORRECCIÓN: logout usa ruta directa sin namespace ── */
+document.getElementById('menuSalir')?.addEventListener('click', () => {
+  closeDropdown();
+  window.location.href = '/accounts/logout/';
 });
 </script>
 </body>

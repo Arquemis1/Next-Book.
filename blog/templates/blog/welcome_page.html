@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -18,11 +19,7 @@
   --muted2:   #3a3a48;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   background: var(--bg);
@@ -42,7 +39,6 @@ body {
   position: relative;
 }
 
-/* Efecto de fondo similar al tuyo */
 .welcome-container::after {
   content: '';
   position: absolute;
@@ -94,10 +90,7 @@ h1 {
   color: #ffffff;
 }
 
-h1 em {
-  font-style: normal;
-  color: var(--accent);
-}
+h1 em { font-style: normal; color: var(--accent); }
 
 p {
   font-size: 1.1rem;
@@ -125,37 +118,14 @@ p {
   transition: all 0.2s ease;
 }
 
-.btn-solid {
-  background: var(--accent);
-  color: #0e0e10;
-  border: none;
-}
+.btn-solid { background: var(--accent); color: #0e0e10; border: none; }
+.btn-solid:hover { background: var(--accent2); transform: translateY(-2px); }
 
-.btn-solid:hover {
-  background: var(--accent2);
-  transform: translateY(-2px);
-}
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); background: rgba(200,240,110,.05); }
 
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-}
+.footer-note { position: absolute; bottom: 1.5rem; font-size: 0.8rem; color: var(--muted2); }
 
-.btn-outline:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: rgba(200,240,110,.05);
-}
-
-.footer-note {
-  position: absolute;
-  bottom: 1.5rem;
-  font-size: 0.8rem;
-  color: var(--muted2);
-}
-
-/* ✅ CLASE ESPECIAL PARA ASEGURAR QUE SEA CLICABLE */
 .enlace-invitado {
   color: #888 !important;
   text-decoration: underline !important;
@@ -164,14 +134,12 @@ p {
   z-index: 9999 !important;
   pointer-events: auto !important;
 }
-
 </style>
 </head>
 <body>
 
 <div class="welcome-container">
   <div class="welcome-content">
-    <!-- Logo igual al de tu diseño -->
     <div class="logo">
       <div class="logo-mark">
         <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -185,14 +153,13 @@ p {
     <h1>Tu espacio para <em>leer y escribir</em> sin límites</h1>
     <p>Únete a una comunidad donde las historias cobran vida. Descubre nuevos mundos o crea el tuyo propio.</p>
 
-    <!-- 👇 BOTONES -->
     <div class="buttons-group">
       <a href="/accounts/login/" class="btn btn-outline">Iniciar sesión</a>
-      <a href="/accounts/register/" class="btn btn-solid">Crear cuenta</a>
+      <!-- ✅ CORRECCIÓN: /registro/ en lugar de /accounts/register/ -->
+      <a href="/registro/" class="btn btn-solid">Crear cuenta</a>
     </div>
   </div>
 
-  {# ✅ ENLACE DE INVITADO - VERSIÓN DEFINITIVA Y SEGURA #}
   <div class="footer-note">
     <a href="/home/" class="enlace-invitado">O entra como invitado →</a>
   </div>
